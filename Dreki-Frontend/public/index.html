@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+  <head>
+
+    <!--Tell any browser that this file is UTF-8 encoded:-->
+    <meta charset="utf-8">
+    <!--Let browser know website is optimized for mobile:-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--Tell Microsoft Internet Explorer to use the latest rendering engine: (edge)-->
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <!--Remove blue styling of telephone numbers on IPhone IOS:-->
+    <meta name="format-detection" content="telephone=no">
+
+    <!--<link rel="icon" href="css/*.png">-->
+
+    <title>Dreki Raufarhöfn</title>
+    <meta name="description" content="Eldspúandi dreki á Raufarhöfn eftir Helga ólafsson.">
+
+     <!--My CSS file:-->
+     <link rel="stylesheet" href="css/app.css">
+  </head>
+  <body>
+
+    <h1 class="c_title">Welcome to Dreki's website!</h1>
+
+    <div>
+      <!--LOGIN MODAL-->
+      <form id="id_login-form" class="c_modal c_auth-logged-out">
+        <h2>Login</h2>
+        <div class="c_input-field">
+            <label for="id_login-email">Email address:</label>
+            <input type="email" id="id_login-email" required />
+        </div>
+        <div class="c_input-field">
+            <label for="id_login-password">Your password:</label>
+            <input type="password" id="id_login-password" required />
+        </div>
+        <button>Login</button>
+        <h2 class="c_error-text"></h2>
+      </form>
+
+      <!--LOGOUT MODAL-->
+      <form id="id_logout-form" class="c_modal c_auth-logged-in">
+        <h2>Logout</h2>
+        <button>Logout</button>
+        <h2 class="c_error-text"></h2>
+      </form>
+
+      <!--PERMITS FOR FIRE MODAL-->
+      <form id="id_permits-for-fire" class="c_modal c_auth-logged-in">
+        <h2>Share a fire permit</h2>
+        <div class="c_input-field">
+          <label for="id_share-to-email">Email address:</label>
+          <input type="email" id="id_share-to-email" required />
+        </div>
+        <button>Send</button>
+        <h2 class="c_error-text"></h2>
+      </form>
+
+      <!--FIRE MODAL-->
+      <form id="id_fire" class="c_modal">
+        <h2>Do you want to fire the dragon?</h2>
+        <div class="c_input-field">
+          <label for="id_email-with-permit">Your email address:</label>
+          <input type="email" id="id_email-with-permit" required />
+        </div>
+        <div class="c_input-field">
+          <label for="id_permit-code">Your permit code:</label>
+          <input type="text" id="id_permit-code" required />
+        </div>
+        <button>FIRE!</button>
+        <h2 class="c_error-text"></h2>
+      </form>
+    </div>
+
+<!--
+    <div id="id_container">
+      <button id="id_button" class="c_button">Call Firebase Function!</button>
+      <button id="id_button_db" class="c_button">FireStore!</button>
+    </div>-->
+
+
+    <!--My JavaScript files:-->
+    <script type="module" src="js/app.js"></script>
+  </body>
+</html>

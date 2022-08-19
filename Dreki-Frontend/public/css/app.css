@@ -1,0 +1,91 @@
+
+/**** Variables: ****/
+:root{
+    /* root variables are available in the whole document.*/
+    /* in this document the 'root' tag is the '<html>' tag.*/
+
+    /* set the font-size to 62.5% to makes it easier to working with 'rem'.*/
+    /* 62.5% font-size is equal to 10px and 1rem in most browsers*/
+    font-size: 62.5%; /* 62.5% == 10px == 1rem */
+
+    --my-theme-prime-color: #d35536;
+    --my-theme-secondary-color: rgb(92, 92, 92);
+}
+body{
+    all: unset;
+    background: black;
+    color: antiquewhite;
+}
+
+
+.c_title{
+    color: var(--my-theme-prime-color);
+    text-align: center;
+    font-size: 4rem;
+}
+
+/* LOGIN & LOGOUT MODALS: */
+.c_modal{
+    background: #333;
+    width: 75%;
+    max-width: 50rem;
+    margin: 4rem auto;
+    padding: 0.5rem;
+    border-radius: 0.8rem;
+    box-shadow: 0rem 0.1rem 0.6rem rgba(255, 255, 255, 0.2);
+}
+.c_modal h2{
+    color: var(--my-theme-prime-color);
+    text-align: center;
+    font-size: 2rem;
+}
+.c_input-field{
+    width: 100%;
+    border-radius: 0.6rem;
+    margin: 1rem auto;
+    box-shadow: 0rem 0.1rem 0.6rem rgba(255, 255, 255, 0.089);
+}
+.c_input-field label{
+    display: block;
+    padding: 0.6rem 1.5%;
+}
+.c_input-field input{
+    display: block;
+    background: var(--my-theme-secondary-color);
+    color: white;
+    width: 97%;
+    border-radius: 0rem 0rem 0.6rem 0.6rem;
+    padding: 0.6rem 1.5%;
+    box-shadow: none;
+    border: none;
+    cursor: pointer;
+}
+.c_modal button{
+    display: block;
+    background: var(--my-theme-prime-color);
+    color: white;
+    width: 75%;
+    margin: 1rem auto;
+    padding: 0.5rem;
+    border-radius: 0.6rem;
+    cursor: pointer;
+    box-shadow: none;
+    border:none;
+}
+
+
+/* TEST  */
+#id_container{
+    width: 20rem;
+    margin: auto;
+    padding-top: 10rem;
+}
+.c_button{
+    margin-bottom: 20px;
+    background: #acbf64;
+    font-size: 2rem;
+    border: #4e5f0c solid 0.2rem;
+}
+.c_button:hover{
+    background: wheat;
+}

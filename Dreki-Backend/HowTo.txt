@@ -1,0 +1,103 @@
+https://www.w3schools.com/nodejs/nodejs_raspberrypi_gpio_intro.asp
+https://www.npmjs.com/package/onoff
+    
+    nvm (Node Package Manager) is a tool that allows you to install javascript packages.
+    npm comes with Node.js so if you have node installed you most likely have npm installed as well.
+        Or: nvm installs Node which installs npm.
+ 
+    To See if 'node.js' in installed: (run in terminal)
+node -v
+npm -v
+
+    To update: (just change the version number)
+nvm install v16.4.0
+npm install -g firebase-tools
+
+    A node.js app starts in a file called 'index.js'.
+    To run the app, go to the current directory and run:
+node .
+
+    In node.js we have a global namespace called 'global', put varibles there to accass them anywere.
+    We also have global variable called 'process', this holds data related to the current process.
+
+
+    in the index file:
+console.log("hello world!");
+
+global.my_number = "32";
+console.log(global.my_number);
+
+console.log(process.env.USER);
+console.log(process.platform);
+
+
+
+    Events in node.js:
+
+    We have an "on-exit" event:
+process.on('exit', function(){
+    // Callback function.
+    console.log("Okay bæbæ :)")
+})
+
+    To create custom events, we use this 'EventEmitter' module that is build in to node.js:
+const { EventEmitter } = require('events');
+const eventEmitter = new EventEmitter();
+
+eventEmitter.on('my_event', function(){
+    // Callback function.
+    console.log("Okay my event now!");
+});
+
+eventEmitter.emit('my_event');
+
+
+
+    The filesystem, here are 3 ways to read from a file:
+    #1:
+const { readFile, readFileSync } = require('fs');
+const my_text = readFileSync('./HowTo.txt', 'utf8');
+console.log(my_text);
+
+    #2:
+readFile('./HowTo.txt', 'utf8', function(err, my_text){
+    // Callback function.
+    console.log(my_text);
+})
+
+    #3:
+const { readFilePrm } = require('fs').promises;
+async function Wrapper_function_for_async(){
+    const my_file = await readFilePrm('./HowTo.txt', 'utf8');
+}
+Wrapper_function_for_async()
+
+
+
+    To create "modules" put for example this in to a new file:
+module.exports = {
+    my_stuff = "some stuff"
+}
+
+    Then to use the module put this in the 'index.js' file:
+const My_module = require('./my-module');
+
+
+
+    To use 'npm' to install modules: (run in terminal, in project directory)
+npm init -y
+    This will initialize it (and create file named 'package.json'). then to install the modules:
+npm install some_module_name
+
+
+
+
+    in terminal:
+npm install dotenv --save
+
+    in '.env' file:
+HELLO=world
+
+    in 'index.js' file:
+require('dotenv').config()
+console.log( process.env.HELLO );
