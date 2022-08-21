@@ -10,11 +10,54 @@
 
     --my-theme-prime-color: #d35536;
     --my-theme-secondary-color: rgb(92, 92, 92);
+    --my-theme-hover-color: #d33e36;
 }
 body{
     all: unset;
     background: black;
     color: antiquewhite;
+    font-size: 1.25rem;
+}
+
+/* LANGUAGES: */
+.c_is{
+    display: inline;
+}
+.c_en{
+    display: none;
+}
+
+/* HEADER: */
+header{
+    position: relative;
+    height: 8rem;
+    width: 100%;
+    padding-top: 1rem;
+}
+header button{
+    position: absolute;
+    background: var(--my-theme-prime-color);
+    color: white;
+    height: 80%;
+    width: 6rem;
+    padding: 0.8rem;
+    cursor: pointer;
+    border-radius: 0.8rem;
+    border: none;
+}
+#id_svg-flag-is, #id_svg-flag-gb{
+    border-radius: 0.8rem;
+}
+#id_svg-login-button{
+    width: 90%;
+    margin-right: 10%;
+    height: auto;
+}
+.c_left{
+    left: 1rem;
+}
+.c_right{
+    right: 1rem;
 }
 
 
@@ -37,13 +80,17 @@ body{
 .c_modal h2{
     color: var(--my-theme-prime-color);
     text-align: center;
-    font-size: 2rem;
+    font-size: 2.25rem;
 }
 .c_input-field{
     width: 100%;
     border-radius: 0.6rem;
     margin: 1rem auto;
-    box-shadow: 0rem 0.1rem 0.6rem rgba(255, 255, 255, 0.089);
+    box-shadow: 0rem 0.1rem 0.6rem rgba(255, 255, 255, 0.1);
+}
+.c_input-field:hover{
+    box-shadow: 0rem 0.1rem 0.6rem rgba(255, 255, 255, 0.25);
+    font-weight: 900;
 }
 .c_input-field label{
     display: block;
@@ -72,6 +119,9 @@ body{
     box-shadow: none;
     border:none;
 }
+button:hover{
+    background: var(--my-theme-hover-color);
+}
 
 
 /* TEST  */
@@ -87,5 +137,5 @@ body{
     border: #4e5f0c solid 0.2rem;
 }
 .c_button:hover{
-    background: wheat;
+    background: var(--my-theme-hover-color);
 }

@@ -19,68 +19,186 @@
      <!--My CSS file:-->
      <link rel="stylesheet" href="css/app.css">
   </head>
-  <body>
+  <body>    
+    <header>
+      <button id="id_is-button" class="c_en c_left" onclick="set_to_is()">
+        <svg id="id_svg-flag-is" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 480">
+          <defs>
+            <clipPath id="a">
+              <path fill-opacity=".7" d="M0 0h640v480H0z"/>
+            </clipPath>
+          </defs>
+          <g fill-rule="evenodd" stroke-width="0" clip-path="url(#a)">
+            <path fill="#003897" d="M0 0h666.7v480H0z"/>
+            <path fill="#fff" d="M0 186.7h186.7V0h106.6v186.7h373.4v106.6H293.3V480H186.7V293.3H0V186.7z"/>
+            <path fill="#d72828" d="M0 213.3h213.3V0h53.4v213.3h400v53.4h-400V480h-53.4V266.7H0v-53.4z"/>
+          </g>
+        </svg>
+        <span lang="is">Íslenska</span>
+      </button>
 
-    <h1 class="c_title">Welcome to Dreki's website!</h1>
+      <button id="id_en-button" class="c_is c_left" onclick="set_to_en()">
+        <svg id="id_svg-flag-gb" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 480">
+          <path fill="#012169" d="M0 0h640v480H0z"/>
+          <path fill="#FFF" d="m75 0 244 181L562 0h78v62L400 241l240 178v61h-80L320 301 81 480H0v-60l239-178L0 64V0h75z"/>
+          <path fill="#C8102E" d="m424 281 216 159v40L369 281h55zm-184 20 6 35L54 480H0l240-179zM640 0v3L391 191l2-44L590 0h50zM0 0l239 176h-60L0 42V0z"/>
+          <path fill="#FFF" d="M241 0v480h160V0H241zM0 160v160h640V160H0z"/>
+          <path fill="#C8102E" d="M0 193v96h640v-96H0zM273 0v480h96V0h-96z"/>
+        </svg>
+        <span lang="en">English</span>
+      </button>
+
+      <button id="id_loggin-button" class="c_right">
+        <svg id="id_svg-login-button" viewBox="0 0 377.341 226.39054" width="400" height="309.82904" xmlns="http://www.w3.org/2000/svg">
+          <path style="fill:#ffffff" d="m 200.631,160.96427 c -6.353,6.358 -6.358,16.709 0,23.094 3.079,3.079 7.174,4.776 11.536,4.776 4.362,0 8.452,-1.692 11.547,-4.776 l 59.362,-59.346 c 1.474,-1.507 2.643,-3.263 3.519,-5.347 0.805,-1.996 1.218,-4.063 1.218,-6.168 0,-2.105 -0.408,-4.172 -1.273,-6.315 -0.843,-1.985 -2.023,-3.742 -3.514,-5.227 l -59.313,-59.313 c -3.079,-3.084 -7.18,-4.781 -11.547,-4.781 -4.368,0 -8.469,1.702 -11.536,4.781 -6.364,6.364 -6.364,16.72 0,23.083 l 31.449,31.449 H 16.317 C 7.321,96.87527 0,104.20227 0,113.19327 c 0,8.991 7.321,16.317 16.317,16.317 h 215.762 z"/>
+          <path style="fill:#ffffff" d="M 322.95,-32.94373 H 139.452 c -30.002,0 -54.402,24.4 -54.402,54.391 l 0.033,57.698 h 3.263 c 2.986,3.987 7.74,6.587 13.032,6.587 5.45,0 10.231,-2.605 13.184,-6.668 l 3.138,-0.044 v -57.574 c 0,-11.982 9.758,-21.73999998 21.751,-21.73999998 H 322.95 c 11.988,0 21.751,9.75799998 21.751,21.73999998 v 183.503 c 0,11.993 -9.763,21.74 -21.751,21.74 H 139.452 c -11.993,0 -21.751,-9.747 -21.751,-21.74 l -0.027,-57.725 H 114.4 c -2.986,-3.981 -7.74,-6.57 -13.027,-6.57 -5.325,0 -10.106,2.627 -13.086,6.663 l -3.242,0.049 v 57.583 c 0,29.986 24.4,54.385 54.402,54.385 H 322.95 c 29.996,0 54.391,-24.4 54.391,-54.385 v -183.503 c 0,-29.991 -24.395,-54.39 -54.391,-54.39 z"/>
+        </svg>
+        <span lang="is" class="c_is">Innskrá</span>
+        <span lang="en" class="c_en">Login</span>
+      </button>
+    </header>
+
+
+    <h1 class="c_title">
+      <span lang="is" class="c_is">Velkomin á vefsíðu Drekans!</span>
+      <span lang="en" class="c_en">Welcome to Dreki's website!</span>
+    </h1>
 
     <div>
       <!--LOGIN MODAL-->
       <form id="id_login-form" class="c_modal c_auth-logged-out">
-        <h2>Login</h2>
+        <h2>
+          <span lang="is" class="c_is">Innskráning</span>
+          <span lang="en" class="c_en">Login</span>
+        </h2>
         <div class="c_input-field">
-            <label for="id_login-email">Email address:</label>
+            <label for="id_login-email">
+              <span lang="is" class="c_is">Netfang:</span>
+              <span lang="en" class="c_en">Email address:</span>
+            </label>
             <input type="email" id="id_login-email" required />
         </div>
         <div class="c_input-field">
-            <label for="id_login-password">Your password:</label>
+            <label for="id_login-password">
+              <span lang="is" class="c_is">Lykinorðið þitt:</span>
+              <span lang="en" class="c_en">Your password:</span>
+            </label>
             <input type="password" id="id_login-password" required />
         </div>
-        <button>Login</button>
+        <button>
+          <span lang="is" class="c_is">Innskrá</span>
+          <span lang="en" class="c_en">Login</span>
+        </button>
         <h2 class="c_error-text"></h2>
       </form>
 
       <!--LOGOUT MODAL-->
       <form id="id_logout-form" class="c_modal c_auth-logged-in">
-        <h2>Logout</h2>
-        <button>Logout</button>
+        <h2>
+          <span lang="is" class="c_is">Útskráning</span>
+          <span lang="en" class="c_en">Logout</span>
+        </h2>
+        <button>
+          <span lang="is" class="c_is">Útskrá</span>
+          <span lang="en" class="c_en">Logout</span>
+        </button>
         <h2 class="c_error-text"></h2>
       </form>
 
       <!--PERMITS FOR FIRE MODAL-->
-      <form id="id_permits-for-fire" class="c_modal c_auth-logged-in">
-        <h2>Share a fire permit</h2>
+      <form id="id_permits-for-fire-form" class="c_modal c_auth-logged-in">
+        <h2>
+          <span lang="is" class="c_is">Deila auðkenni með umsækjanda</span>
+          <span lang="en" class="c_en">Share permit-ID with applicant</span>
+        </h2>
         <div class="c_input-field">
-          <label for="id_share-to-email">Email address:</label>
+          <label for="id_share-to-email">
+            <span lang="is" class="c_is">Netfang umsækjanda:</span>
+            <span lang="en" class="c_en">Applicant's email address:</span>
+          </label>
           <input type="email" id="id_share-to-email" required />
         </div>
-        <button>Send</button>
+        <button>
+          <span lang="is" class="c_is">Senda</span>
+          <span lang="en" class="c_en">Send</span>
+        </button>
         <h2 class="c_error-text"></h2>
       </form>
 
       <!--FIRE MODAL-->
-      <form id="id_fire" class="c_modal">
-        <h2>Do you want to fire the dragon?</h2>
+      <form id="id_fire-form" class="c_modal">
+        <h2>
+          <span lang="is" class="c_is">Viltu spúa eldi?</span>
+          <span lang="en" class="c_en">Wish to fire the dragon?</span>
+        </h2>
         <div class="c_input-field">
-          <label for="id_email-with-permit">Your email address:</label>
+          <label for="id_email-with-permit">
+            <span lang="is" class="c_is">Netfangið þitt:</span>
+            <span lang="en" class="c_en">Your email address:</span>
+          </label>
           <input type="email" id="id_email-with-permit" required />
         </div>
         <div class="c_input-field">
-          <label for="id_permit-code">Your permit code:</label>
+          <label for="id_permit-code">
+            <span lang="is" class="c_is">Auðkenni:</span>
+            <span lang="en" class="c_en">Permit-ID:</span>
+          </label>
           <input type="text" id="id_permit-code" required />
         </div>
-        <button>FIRE!</button>
+        <button>
+          <span lang="is" class="c_is">SPÚA!</span>
+          <span lang="en" class="c_en">FIRE!</span>
+        </button>
+        <h2 class="c_error-text"></h2>
+      </form>
+
+      <!--ADMIN FIRE MODAL-->
+      <form id="id_admin-fire-form" class="c_modal">
+        <h2>
+          <span lang="is" class="c_is">Viltu spúa eldi?</span>
+          <span lang="en" class="c_en">Wish to fire the dragon?</span>
+        </h2>
+        <button>
+          <span lang="is" class="c_is">SPÚA!</span>
+          <span lang="en" class="c_en">FIRE!</span>
+        </button>
         <h2 class="c_error-text"></h2>
       </form>
     </div>
 
-<!--
-    <div id="id_container">
-      <button id="id_button" class="c_button">Call Firebase Function!</button>
-      <button id="id_button_db" class="c_button">FireStore!</button>
-    </div>-->
-
 
     <!--My JavaScript files:-->
     <script type="module" src="js/app.js"></script>
+
+    <!--My JavaScript for changing between languages:-->
+    <script>
+      // Getting the stylesheet:
+      const stylesheet = document.styleSheets[0];
+      let css_rule_is = null;
+      let css_rule_en = null;
+      // looping through all its rules and getting the rules needed:
+      for(let i = 0; i < stylesheet.cssRules.length; i++) {
+        if(stylesheet.cssRules[i].selectorText === '.c_is') {
+          css_rule_is = stylesheet.cssRules[i];
+        }
+        if(stylesheet.cssRules[i].selectorText === '.c_en') {
+          css_rule_en = stylesheet.cssRules[i];
+        }
+        if(css_rule_is && css_rule_en){
+          break;
+        }
+      }
+      // Callback from buttons:
+      function set_to_is() {
+        console.log("Change language to English.");
+        css_rule_is.style.setProperty('display', 'inline');
+        css_rule_en.style.setProperty('display', 'none');
+      }
+      function set_to_en() {
+        console.log("Change language to Icelandic.");
+        css_rule_is.style.setProperty('display', 'none');
+        css_rule_en.style.setProperty('display', 'inline');
+      }
+      </script>
   </body>
 </html>

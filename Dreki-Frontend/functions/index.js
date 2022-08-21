@@ -64,8 +64,8 @@ exports.createFirePermit = functions.https.onCall(async (data, context) => {
     port: 587,
     secure: false, // true for 465, false for other ports
     auth: {
-      user: process.env.USER,
-      pass: process.env.PASS
+      user: process.env.USER, // <- Gmail which email is sent from.
+      pass: process.env.PASS // <- special Gmail password called 'App Password'.
     }
   });
 
