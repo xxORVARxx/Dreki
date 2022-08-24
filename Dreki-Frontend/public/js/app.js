@@ -40,6 +40,18 @@ const fireAsAdmin = httpsCallable(functions, 'fireAsAdmin');
 const myGlobalObj = {
   uid: null,
   email: null,
+  state: {
+    current: null,
+    last: null,
+    loading_modal: null
+  },
+  css_rules: {
+    show_logout: null,
+    show_login: null,
+    auth_logged_out: null,
+    auth_logged_in: null,
+    show_cancel: null
+  }
 }
 
 
@@ -48,9 +60,10 @@ document.addEventListener("DOMContentLoaded", function(){
   // Callback function.
 
   /*** 1 ***/
+  state_machine()
 
   /*** 2 ***/
-  login_button();
+  GUI_buttons();
 
   /*** 3 ***/
   login_user_with_email();
@@ -69,23 +82,142 @@ document.addEventListener("DOMContentLoaded", function(){
 
 
 
-  /*** 1 ***/
 
+
+  // this 'onAuthStateChanged' event heppens every time user logs-in, -out or signes-up,
+  // if user is logged-in we get the 'credentials' but if user is logged-out we get 'null'.
+  auth.onAuthStateChanged(function(user){
+    // callback function.
+    if(user){
+      // user is signed in.
+      console.log("You have successfully logged in!", user.uid);
+      myGlobalObj.uid = user.uid;
+      change_state('authLoggedIn');
+    }
+    else{
+      // user NOT signed in.
+      console.log("You have successfully logged out!");
+      myGlobalObj.uid = null;
+      myGlobalObj.email = null;
+      change_state('authLoggedOut')
+    }
+  });
+
+
+
+  function change_state(state){
+    myGlobalObj.css_rules.show_login.style.setProperty('display', 'none');
+    myGlobalObj.css_rules.show_logout.style.setProperty('display', 'none');
+    myGlobalObj.css_rules.auth_logged_in.style.setProperty('display', 'none');
+    myGlobalObj.css_rules.auth_logged_out.style.setProperty('display', 'none');
+    myGlobalObj.css_rules.show_cancel.style.setProperty('display', 'none');
+    switch(state){
+      case "showLogin":
+        console.log("State: 'showLogin'.");
+        myGlobalObj.css_rules.show_login.style.setProperty('display', 'block');
+        myGlobalObj.css_rules.show_cancel.style.setProperty('display', 'block');
+        break;
+      case "showLogout":
+        console.log("State: 'showLogout'.");
+        myGlobalObj.css_rules.show_logout.style.setProperty('display', 'block');
+        myGlobalObj.css_rules.show_cancel.style.setProperty('display', 'block');
+        break;
+      case "authLoggedIn":
+        console.log("State: 'authLoggedIn'.");
+        myGlobalObj.css_rules.auth_logged_in.style.setProperty('display', 'block');
+        break;
+      case "authLoggedOut":
+        console.log("State: 'authLoggedOut'.");
+        myGlobalObj.css_rules.auth_logged_out.style.setProperty('display', 'block');
+        break;
+      default:
+        console.error(`ERROR: State: "${state}" does not exist!`);
+        throw new Error(`ERROR: State: "${state}" does not exist!`);
+        break;
+    }
+
+    if(myGlobalObj.state.loading_modal){
+      myGlobalObj.state.loading_modal.classList.remove("c_animation-loading-modal");
+      myGlobalObj.state.loading_modal = null;
+    }
+
+    if(!(myGlobalObj.state.current === state)){
+      myGlobalObj.state.last = myGlobalObj.state.current;
+      myGlobalObj.state.current = state;
+    }
+  }
+
+
+
+
+
+  /*** 1 ***/
+  function state_machine(){
+    // Get loading animation modal:
+    const loading_modal = document.querySelector(".c_animation-loading-modal");
+    myGlobalObj.state.loading_modal = loading_modal;
+
+    // Getting the stylesheet:
+    const stylesheet = document.styleSheets[0];
+    // looping through all its rules and getting the rules needed:
+    for(let i = 0; i < stylesheet.cssRules.length; i++) {
+      if(stylesheet.cssRules[i].selectorText === '.c_show-logout') {
+        myGlobalObj.css_rules.show_logout = stylesheet.cssRules[i];
+      }
+      else if(stylesheet.cssRules[i].selectorText === '.c_show-login') {
+        myGlobalObj.css_rules.show_login = stylesheet.cssRules[i];
+      }
+      else if(stylesheet.cssRules[i].selectorText === '.c_auth-logged-out') {
+        myGlobalObj.css_rules.auth_logged_out = stylesheet.cssRules[i];
+      }
+      else if(stylesheet.cssRules[i].selectorText === '.c_auth-logged-in') {
+        myGlobalObj.css_rules.auth_logged_in = stylesheet.cssRules[i];
+      }
+      else if(stylesheet.cssRules[i].selectorText === '.c_show-cancel') {
+        myGlobalObj.css_rules.show_cancel = stylesheet.cssRules[i];
+      }
+      if(myGlobalObj.css_rules.show_logout && 
+        myGlobalObj.css_rules.show_login && 
+        myGlobalObj.css_rules.auth_logged_out && 
+        myGlobalObj.css_rules.auth_logged_in && 
+        myGlobalObj.css_rules.show_cancel){
+        break;
+      }
+    }
+  }
 
 
 
   /*** 2 ***/
-  function login_button(){
-
+  function GUI_buttons(){
     const login_button = document.querySelector("#id_loggin-button");
-    login_button.addEventListener("onclick", function(e){
+    const logout_button = document.querySelector("#id_loggout-button");
+    const back_button = document.querySelector("#id_back-button");
+    const cancel_button = document.querySelector("#id_cancel-button");
+
+    login_button.addEventListener("click", function(e){
       // callback function.
       e.preventDefault();
-
+      change_state('showLogin');
+    });
+    logout_button.addEventListener("click", function(e){
+      // callback function.
+      e.preventDefault();
+      change_state('showLogout');
+    });
+    back_button.addEventListener("click", function(e){
+      // callback function.
+      e.preventDefault();
+      change_state(myGlobalObj.state.last);
+    });
+    cancel_button.addEventListener("click", function(e){
+      // callback function.
+      e.preventDefault();
+      change_state(myGlobalObj.state.last);
     });
   }
 
-
+  
 
   /*** 3 ***/
   function login_user_with_email(){
@@ -101,14 +233,13 @@ document.addEventListener("DOMContentLoaded", function(){
       f_error_reset(login_form);
       const email = login_form["id_login-email"].value;
       const password = login_form["id_login-password"].value;
-
       // using email and password from form to login user with firebase-auth:
       signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // signed in susessfully.
-        myGlobalObj.uid = userCredential.user.uid;
         myGlobalObj.email = email;
-        console.log("You have successfully logged in!", myGlobalObj.uid);
+
+        // See the function above called: "auth.onAuthStateChanged()" for more logic after signing in.
 
         // clearing form and error-text if any:
         login_form.reset();
@@ -139,9 +270,9 @@ document.addEventListener("DOMContentLoaded", function(){
 
       // logout user:
       signOut(auth).then(() => {
-        console.log("You have successfully logged out!");
-        myGlobalObj.uid = null;
-        myGlobalObj.email = null;
+        // logout susessfully.
+
+        // See the function above called: "auth.onAuthStateChanged()" for more logic after loging out.
 
         // clearing error-text if any:
         f_error_reset(logout_form);

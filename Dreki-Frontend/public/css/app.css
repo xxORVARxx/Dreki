@@ -27,6 +27,23 @@ body{
     display: none;
 }
 
+/* STATES: */
+.c_show-logout{
+    display: none;
+}
+.c_show-login{
+    display: none;
+}
+.c_auth-logged-out{
+    display: none;
+}
+.c_auth-logged-in{
+    display: none;
+}
+.c_show-cancel{
+    display: none;
+}
+
 /* HEADER: */
 header{
     position: relative;
@@ -48,7 +65,7 @@ header button{
 #id_svg-flag-is, #id_svg-flag-gb{
     border-radius: 0.8rem;
 }
-#id_svg-login-button{
+#id_svg-login-button, #id_svg-logout-button, #id_svg-back-button{
     width: 90%;
     margin-right: 10%;
     height: auto;
@@ -60,19 +77,19 @@ header button{
     right: 1rem;
 }
 
-
 .c_title{
     color: var(--my-theme-prime-color);
     text-align: center;
     font-size: 4rem;
 }
 
-/* LOGIN & LOGOUT MODALS: */
+/* MODALS: */
 .c_modal{
     background: #333;
     width: 75%;
     max-width: 50rem;
     margin: 4rem auto;
+    margin-bottom: 2.75rem;
     padding: 0.5rem;
     border-radius: 0.8rem;
     box-shadow: 0rem 0.1rem 0.6rem rgba(255, 255, 255, 0.2);
@@ -122,20 +139,57 @@ header button{
 button:hover{
     background: var(--my-theme-hover-color);
 }
-
-
-/* TEST  */
-#id_container{
-    width: 20rem;
-    margin: auto;
-    padding-top: 10rem;
+#id_cancel-button{
+    width: 50%;
+    max-width: 37.5rem;
+    margin: 1rem auto;
+    border-radius: 0.6rem;
 }
-.c_button{
-    margin-bottom: 20px;
-    background: #acbf64;
-    font-size: 2rem;
-    border: #4e5f0c solid 0.2rem;
+#id_cancel-button button{
+    background: var(--my-theme-secondary-color);
+    color: white;
+    width: 100%;
+    padding: 0.5rem;
+    border-radius: 0.6rem;
+    cursor: pointer;
+    box-shadow: 0rem 0.1rem 0.6rem rgba(255, 255, 255, 0.25);
+    border:none;
 }
-.c_button:hover{
-    background: var(--my-theme-hover-color);
+#id_cancel-button:hover{
+    box-shadow: 0rem 0.1rem 0.6rem rgba(255, 255, 255, 0.25);
+}
+
+/*** Animations: ***/
+.c_animation-loading-modal{
+    background: linear-gradient(0.25turn, #33333333, #333333FF 45% 55%, #33333333);
+    width: 75%;
+    max-width: 50rem;
+    margin: 4rem auto;
+    height: 24rem;
+    border-radius: 0.8rem;
+}
+.c_animation-loading-modal div{
+    width: 100%;
+    height: 100%;
+    margin: 0rem auto;
+    border-radius: inherit;
+    animation-name: loadingModal;
+    animation-timing-function: ease-in-out;
+    animation-duration: 0.5s;
+    animation-iteration-count: infinite;
+    animation-direction: alternate /*<- The animation is played forwards first, then backwards.*/
+}
+@keyframes loadingModal{
+    0% {
+        background: var(--my-theme-secondary-color);
+        width: 10%;
+        filter: blur(1rem);
+        -webkit-filter: blur(1rem);
+    }
+    100% {
+        background: #333;
+        width: 100%;
+        filter: blur(0.1rem);
+        -webkit-filter: blur(0.1rem);
+    }
 }

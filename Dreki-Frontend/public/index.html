@@ -48,13 +48,30 @@
         <span lang="en">English</span>
       </button>
 
-      <button id="id_loggin-button" class="c_right">
+      <button id="id_loggin-button" class="c_right c_auth-logged-out">
         <svg id="id_svg-login-button" viewBox="0 0 377.341 226.39054" width="400" height="309.82904" xmlns="http://www.w3.org/2000/svg">
           <path style="fill:#ffffff" d="m 200.631,160.96427 c -6.353,6.358 -6.358,16.709 0,23.094 3.079,3.079 7.174,4.776 11.536,4.776 4.362,0 8.452,-1.692 11.547,-4.776 l 59.362,-59.346 c 1.474,-1.507 2.643,-3.263 3.519,-5.347 0.805,-1.996 1.218,-4.063 1.218,-6.168 0,-2.105 -0.408,-4.172 -1.273,-6.315 -0.843,-1.985 -2.023,-3.742 -3.514,-5.227 l -59.313,-59.313 c -3.079,-3.084 -7.18,-4.781 -11.547,-4.781 -4.368,0 -8.469,1.702 -11.536,4.781 -6.364,6.364 -6.364,16.72 0,23.083 l 31.449,31.449 H 16.317 C 7.321,96.87527 0,104.20227 0,113.19327 c 0,8.991 7.321,16.317 16.317,16.317 h 215.762 z"/>
           <path style="fill:#ffffff" d="M 322.95,-32.94373 H 139.452 c -30.002,0 -54.402,24.4 -54.402,54.391 l 0.033,57.698 h 3.263 c 2.986,3.987 7.74,6.587 13.032,6.587 5.45,0 10.231,-2.605 13.184,-6.668 l 3.138,-0.044 v -57.574 c 0,-11.982 9.758,-21.73999998 21.751,-21.73999998 H 322.95 c 11.988,0 21.751,9.75799998 21.751,21.73999998 v 183.503 c 0,11.993 -9.763,21.74 -21.751,21.74 H 139.452 c -11.993,0 -21.751,-9.747 -21.751,-21.74 l -0.027,-57.725 H 114.4 c -2.986,-3.981 -7.74,-6.57 -13.027,-6.57 -5.325,0 -10.106,2.627 -13.086,6.663 l -3.242,0.049 v 57.583 c 0,29.986 24.4,54.385 54.402,54.385 H 322.95 c 29.996,0 54.391,-24.4 54.391,-54.385 v -183.503 c 0,-29.991 -24.395,-54.39 -54.391,-54.39 z"/>
         </svg>
         <span lang="is" class="c_is">Innskrá</span>
         <span lang="en" class="c_en">Login</span>
+      </button>
+
+      <button id="id_loggout-button" class="c_right c_auth-logged-in">
+        <svg id="id_svg-logout-button" viewBox="0 0 377.341 226.39054" width="400" height="309.82904" xmlns="http://www.w3.org/2000/svg">
+          <path style="fill:#ffffff" d="m 87.182,65.43127 c 6.353,-6.358 6.358,-16.709 0,-23.094 -3.079,-3.079 -7.174,-4.776 -11.536,-4.776 -4.362,0 -8.452,1.692 -11.547,4.776 l -59.362,59.346 c -1.474,1.507 -2.643,3.263 -3.519,5.347 -0.805,1.996 -1.218,4.063 -1.218,6.168 0,2.105 0.408,4.172 1.273,6.315 0.843,1.985 2.023,3.742 3.514,5.227 l 59.313,59.313 c 3.079,3.084 7.18,4.781 11.547,4.781 4.368,0 8.469,-1.702 11.536,-4.781 6.364,-6.364 6.364,-16.72 0,-23.083 l -31.449,-31.449 h 215.762 c 8.996,-10e-4 16.317,-7.328 16.317,-16.319 0,-8.991 -7.321,-16.317 -16.317,-16.317 H 55.734 Z"/>
+          <path style="fill:#ffffff" d="M 327.90185,-32.94373 H 161.10981 c -27.27057,0 -49.44915,24.4 -49.44915,54.391 l 0.03,57.698 h 2.96593 c 2.71415,3.987 7.03534,6.587 11.84555,6.587 4.95382,0 9.29955,-2.605 11.9837,-6.668 l 2.85232,-0.044 v -57.574 c 0,-11.982 8.86961,-21.73999998 19.77075,-21.73999998 h 166.79295 c 10.89659,0 19.77075,9.75799998 19.77075,21.73999998 v 183.503 c 0,11.993 -8.87416,21.74 -19.77075,21.74 H 161.10981 c -10.90114,0 -19.77075,-9.747 -19.77075,-21.74 l -0.0245,-57.725 h -2.97593 c -2.71415,-3.981 -7.03533,-6.57 -11.841,-6.57 -4.8402,0 -9.18593,2.627 -11.89463,6.663 l -2.94684,0.049 v 57.583 c 0,29.986 22.17859,54.385 49.44915,54.385 H 327.9019 c 27.26511,0 49.43915,-24.4 49.43915,-54.385 v -183.503 c 0,-29.991 -22.17404,-54.39 -49.43915,-54.39 z"/>
+        </svg>
+        <span lang="is" class="c_is">Útskrá</span>
+        <span lang="en" class="c_en">Logout</span>
+      </button>
+
+      <button id="id_back-button" class="c_right c_show-cancel">
+        <svg id="id_svg-back-button" viewBox="0 0 377.341 226.39054" width="400" height="309.82904" xmlns="http://www.w3.org/2000/svg">
+          <path style="fill:#ffffff; stroke-width:1.13908" d="m 115.47214,65.43127 c 8.24301,-6.358 8.2495,-16.709 0,-23.094 -3.99499,-3.079 -9.30824,-4.776 -14.96793,-4.776 -5.659692,0 -10.96646,1.692 -14.982217,4.776 l -77.0220938,59.346 c -1.9125124,1.507 -3.429288,3.263 -4.5658964,5.347 -1.0444862,1.996 -1.580353,4.063 -1.580353,6.168 0,2.105 0.5293793,4.172 1.6517153,6.315 1.0937911,1.985 2.6248391,3.742 4.559409,5.227 l 76.9585159,59.313 c 3.994998,3.084 9.316038,4.781 14.98221,4.781 5.66747,0 10.98851,-1.702 14.96794,-4.781 8.25728,-6.364 8.25728,-16.72 0,-23.083 l -40.80502,-31.449 h 279.95083 c 11.67229,-10e-4 21.17128,-7.328 21.17128,-16.319 0,-8.991 -9.49899,-16.317 -21.17128,-16.317 H 74.66842 Z"/>
+        </svg>
+        <span lang="is" class="c_is">Tilbaka</span>
+        <span lang="en" class="c_en">Back</span>
       </button>
     </header>
 
@@ -66,7 +83,7 @@
 
     <div>
       <!--LOGIN MODAL-->
-      <form id="id_login-form" class="c_modal c_auth-logged-out">
+      <form id="id_login-form" class="c_modal c_show-login">
         <h2>
           <span lang="is" class="c_is">Innskráning</span>
           <span lang="en" class="c_en">Login</span>
@@ -80,7 +97,7 @@
         </div>
         <div class="c_input-field">
             <label for="id_login-password">
-              <span lang="is" class="c_is">Lykinorðið þitt:</span>
+              <span lang="is" class="c_is">Lykilorðið þitt:</span>
               <span lang="en" class="c_en">Your password:</span>
             </label>
             <input type="password" id="id_login-password" required />
@@ -93,7 +110,7 @@
       </form>
 
       <!--LOGOUT MODAL-->
-      <form id="id_logout-form" class="c_modal c_auth-logged-in">
+      <form id="id_logout-form" class="c_modal c_show-logout">
         <h2>
           <span lang="is" class="c_is">Útskráning</span>
           <span lang="en" class="c_en">Logout</span>
@@ -126,7 +143,7 @@
       </form>
 
       <!--FIRE MODAL-->
-      <form id="id_fire-form" class="c_modal">
+      <form id="id_fire-form" class="c_modal c_auth-logged-out">
         <h2>
           <span lang="is" class="c_is">Viltu spúa eldi?</span>
           <span lang="en" class="c_en">Wish to fire the dragon?</span>
@@ -153,7 +170,7 @@
       </form>
 
       <!--ADMIN FIRE MODAL-->
-      <form id="id_admin-fire-form" class="c_modal">
+      <form id="id_admin-fire-form" class="c_modal c_auth-logged-in">
         <h2>
           <span lang="is" class="c_is">Viltu spúa eldi?</span>
           <span lang="en" class="c_en">Wish to fire the dragon?</span>
@@ -164,6 +181,19 @@
         </button>
         <h2 class="c_error-text"></h2>
       </form>
+
+      <!--CANCEL BUTTON-->
+      <div id="id_cancel-button" class="c_show-cancel">
+        <button>
+          <span lang="is" class="c_is">Til baka</span>
+          <span lang="en" class="c_en">Cancel</span>
+        </button>
+      </div>
+
+      <!--LOADING MODAL-->
+      <div class="c_animation-loading-modal">
+        <div></div>
+      </div>
     </div>
 
 
@@ -181,7 +211,7 @@
         if(stylesheet.cssRules[i].selectorText === '.c_is') {
           css_rule_is = stylesheet.cssRules[i];
         }
-        if(stylesheet.cssRules[i].selectorText === '.c_en') {
+        else if(stylesheet.cssRules[i].selectorText === '.c_en') {
           css_rule_en = stylesheet.cssRules[i];
         }
         if(css_rule_is && css_rule_en){
