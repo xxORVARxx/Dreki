@@ -77,6 +77,7 @@ header button{
     right: 1rem;
 }
 
+/* TITLE: */
 .c_title{
     color: var(--my-theme-prime-color);
     text-align: center;
@@ -124,6 +125,16 @@ header button{
     border: none;
     cursor: pointer;
 }
+h2.c_error-text{
+    font-size: 2rem;
+    color: var(--my-theme-hover-color);
+}
+h2.c_success-text{
+    font-size: 2rem;
+    color: #49AA19;
+}
+
+/* BUTTONS: */
 .c_modal button{
     display: block;
     background: var(--my-theme-prime-color);
@@ -139,6 +150,8 @@ header button{
 button:hover{
     background: var(--my-theme-hover-color);
 }
+
+/* CANCEL BUTTON: */
 #id_cancel-button{
     width: 50%;
     max-width: 37.5rem;
@@ -159,7 +172,34 @@ button:hover{
     box-shadow: 0rem 0.1rem 0.6rem rgba(255, 255, 255, 0.25);
 }
 
-/*** Animations: ***/
+/* LOADING BUTTON ANIMATION: */
+.c_animation-loading-button{
+    animation-name: loadingButton;
+    animation-timing-function: ease-in-out;
+    animation-duration: 0.5s;
+    animation-iteration-count: infinite;
+    animation-direction: alternate /*<- The animation is played forwards first, then backwards.*/
+}
+@keyframes loadingButton{
+    0% {
+        background: var(--my-theme-hover-color);
+        color: inherit;
+        width: 75%;
+    }
+    33% {
+        color: inherit;
+    }
+    67% {
+        color: transparent;
+    }
+    100% {
+        width: 0%;
+        color: transparent;
+        background: var(--my-theme-prime-color);
+    }
+}
+
+/* LOADING MODAL & ANIMATION: */
 .c_animation-loading-modal{
     background: linear-gradient(0.25turn, #33333333, #333333FF 45% 55%, #33333333);
     width: 75%;
@@ -192,4 +232,16 @@ button:hover{
         filter: blur(0.1rem);
         -webkit-filter: blur(0.1rem);
     }
+}
+
+/* FOOTER */
+footer{
+    position: absolute;
+    right: 1rem;
+    bottom: 1rem;
+    background: #111;
+    color: var(--my-theme-secondary-color);
+    padding: 0.33rem 0.6rem 0.2rem 0.6rem;
+    border-radius: 0.6rem;
+
 }

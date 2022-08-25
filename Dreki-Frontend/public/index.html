@@ -93,14 +93,14 @@
               <span lang="is" class="c_is">Netfang:</span>
               <span lang="en" class="c_en">Email address:</span>
             </label>
-            <input type="email" id="id_login-email" required />
+            <input type="email" id="id_login-email" autocomplete="username" required />
         </div>
         <div class="c_input-field">
             <label for="id_login-password">
               <span lang="is" class="c_is">Lykilorðið þitt:</span>
               <span lang="en" class="c_en">Your password:</span>
             </label>
-            <input type="password" id="id_login-password" required />
+            <input type="password" id="id_login-password" autocomplete="current-password" required />
         </div>
         <button>
           <span lang="is" class="c_is">Innskrá</span>
@@ -140,6 +140,10 @@
           <span lang="en" class="c_en">Send</span>
         </button>
         <h2 class="c_error-text"></h2>
+        <h2 class="c_success-text" style="display: none;">
+          <span lang="is" class="c_is">Auðkenni hefur verið sent.</span>
+          <span lang="en" class="c_en">Permit-ID has been delivered.</span>
+        </h2>
       </form>
 
       <!--FIRE MODAL-->
@@ -160,13 +164,17 @@
             <span lang="is" class="c_is">Auðkenni:</span>
             <span lang="en" class="c_en">Permit-ID:</span>
           </label>
-          <input type="text" id="id_permit-code" required />
+          <input type="text" id="id_permit-code" autocomplete="one-time-code" required />
         </div>
         <button>
           <span lang="is" class="c_is">SPÚA!</span>
           <span lang="en" class="c_en">FIRE!</span>
         </button>
         <h2 class="c_error-text"></h2>
+        <h2 class="c_success-text" style="display: none;">
+          <span lang="is" class="c_is">Beiðni hefur verið sent.</span>
+          <span lang="en" class="c_en">Request has been sent.</span>
+        </h2>
       </form>
 
       <!--ADMIN FIRE MODAL-->
@@ -180,6 +188,10 @@
           <span lang="en" class="c_en">FIRE!</span>
         </button>
         <h2 class="c_error-text"></h2>
+        <h2 class="c_success-text" style="display: none;">
+          <span lang="is" class="c_is">Beiðni hefur verið sent.</span>
+          <span lang="en" class="c_en">Request has been sent.</span>
+        </h2>
       </form>
 
       <!--CANCEL BUTTON-->
@@ -195,6 +207,8 @@
         <div></div>
       </div>
     </div>
+
+    <footer>MadebyÖrvarSigþórsson</footer>
 
 
     <!--My JavaScript files:-->

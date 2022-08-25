@@ -227,10 +227,13 @@ document.addEventListener("DOMContentLoaded", function(){
     }
 
     const login_form = document.querySelector("#id_login-form");
+    const login_button = document.querySelector("#id_login-form > button");
     login_form.addEventListener("submit", async function(e){
       // Asynchronous callback function.
       e.preventDefault();
+      login_button.classList.add("c_animation-loading-button");
       f_error_reset(login_form);
+
       const email = login_form["id_login-email"].value;
       const password = login_form["id_login-password"].value;
       // using email and password from form to login user with firebase-auth:
@@ -244,11 +247,14 @@ document.addEventListener("DOMContentLoaded", function(){
         // clearing form and error-text if any:
         login_form.reset();
         f_error_reset(login_form);
+        login_button.classList.remove("c_animation-loading-button");
       })
       .catch((error) => {
         // handle errors here.
-        login_form.querySelector(".c_error-text").innerHTML = error.message;
-        console.error(error.code, error.message);
+        login_button.classList.remove("c_animation-loading-button");
+        login_form.querySelector(".c_error-text").innerHTML = error.code;
+        console.error("Error\nCode: "+ error.code, "\nMessage: "+ error.message, "\nDetails: "+ error.details);
+        console.error({error});
       });
     });
   }
@@ -263,9 +269,11 @@ document.addEventListener("DOMContentLoaded", function(){
     }
 
     const logout_form = document.querySelector("#id_logout-form");
+    const logout_button = document.querySelector("#id_logout-form > button");
     logout_form.addEventListener("submit", async function(e){
       // Asynchronous callback function in another thread.
       e.preventDefault();
+      logout_button.classList.add("c_animation-loading-button");
       f_error_reset(logout_form);
 
       // logout user:
@@ -276,10 +284,13 @@ document.addEventListener("DOMContentLoaded", function(){
 
         // clearing error-text if any:
         f_error_reset(logout_form);
+        logout_button.classList.remove("c_animation-loading-button");
       }).catch((error) => {
         // handle errors here.
-        logout_form.querySelector(".c_error-text").innerHTML = err.message;
-        console.error(err);
+        logout_button.classList.remove("c_animation-loading-button");
+        logout_form.querySelector(".c_error-text").innerHTML = error.code;
+        console.error("Error\nCode: "+ error.code, "\nMessage: "+ error.message, "\nDetails: "+ error.details);
+        console.error({error});
       });
     });
   }
@@ -290,13 +301,22 @@ document.addEventListener("DOMContentLoaded", function(){
   function share_fire_permit(){
 
     function f_error_reset(permit_form){
-      permit_form.querySelector(".c_error-text").innerHTML = "";
+      permit_form.querySelector("h2.c_error-text").innerHTML = "";
+    }
+
+    function f_on_success(permit_form){
+      setTimeout(() => {
+        permit_form.querySelector("h2.c_success-text").style.setProperty('display', 'none');
+      }, 6667);
+      permit_form.querySelector("h2.c_success-text").style.setProperty('display', 'block');
     }
 
     const permit_form = document.querySelector("#id_permits-for-fire-form");
+    const send_button = document.querySelector("#id_permits-for-fire-form > button");
     permit_form.addEventListener("submit", async function(e){
       // Asynchronous callback function.
       e.preventDefault();
+      send_button.classList.add("c_animation-loading-button");
       f_error_reset(permit_form);
       const email = permit_form["id_share-to-email"].value;
 
@@ -312,11 +332,15 @@ document.addEventListener("DOMContentLoaded", function(){
 
 
         //permit_form.reset();
+        f_on_success(permit_form);
         f_error_reset(permit_form);
+        send_button.classList.remove("c_animation-loading-button");
       }).catch((error) => {
         // handle errors here.
-        console.log({" Code": error.code, " Message": error.message, " Details": error.details});
-        permit_form.querySelector(".c_error-text").innerHTML = error.message;
+        send_button.classList.remove("c_animation-loading-button");
+        permit_form.querySelector("h2.c_error-text").innerHTML = error.message;
+        console.error("Error\nCode: "+ error.code, "\nMessage: "+ error.message, "\nDetails: "+ error.details);
+        console.error({error});
       });
     });
   }
@@ -330,10 +354,19 @@ document.addEventListener("DOMContentLoaded", function(){
       fire_form.querySelector(".c_error-text").innerHTML = "";
     }
 
+    function f_on_success(fire_form){
+      setTimeout(() => {
+        fire_form.querySelector("h2.c_success-text").style.setProperty('display', 'none');
+      }, 6667);
+      fire_form.querySelector("h2.c_success-text").style.setProperty('display', 'block');
+    }
+
     const fire_form = document.querySelector("#id_fire-form");
+    const fire_button = document.querySelector("#id_fire-form > button");
     fire_form.addEventListener("submit", async function(e){
       // Asynchronous callback function.
       e.preventDefault();
+      fire_button.classList.add("c_animation-loading-button");
       f_error_reset(fire_form);
       const email = fire_form["id_email-with-permit"].value;
       const code = fire_form["id_permit-code"].value;
@@ -348,12 +381,16 @@ document.addEventListener("DOMContentLoaded", function(){
         console.log(data);
 
 
+        f_on_success(fire_form);
         fire_form.reset();
         f_error_reset(fire_form);
+        fire_button.classList.remove("c_animation-loading-button");
       }).catch((error) => {
         // handle errors here.
-        console.log({" Code": error.code, " Message": error.message, " Details": error.details});
+        fire_button.classList.remove("c_animation-loading-button");
         fire_form.querySelector(".c_error-text").innerHTML = error.message;
+        console.error("Error\nCode: "+ error.code, "\nMessage: "+ error.message, "\nDetails: "+ error.details);
+        console.error({error});
       });
     });
   }
@@ -367,7 +404,15 @@ document.addEventListener("DOMContentLoaded", function(){
       admin_fire_form.querySelector(".c_error-text").innerHTML = "";
     }
 
+    function f_on_success(admin_fire_form){
+      setTimeout(() => {
+        admin_fire_form.querySelector("h2.c_success-text").style.setProperty('display', 'none');
+      }, 6667);
+      admin_fire_form.querySelector("h2.c_success-text").style.setProperty('display', 'block');
+    }
+
     const admin_fire_form = document.querySelector("#id_admin-fire-form");
+    const admin_fire_button = document.querySelector("#id_fire-form > button");
     admin_fire_form.addEventListener("submit", async function(e){
       // Asynchronous callback function.
       e.preventDefault();
@@ -385,73 +430,14 @@ document.addEventListener("DOMContentLoaded", function(){
 
         admin_fire_form.reset();
         f_error_reset(admin_fire_form);
+        admin_fire_button.classList.remove("c_animation-loading-button");
       }).catch((error) => {
         // handle errors here.
-        console.log({" Code": error.code, " Message": error.message, " Details": error.details});
+        admin_fire_button.classList.remove("c_animation-loading-button");
         admin_fire_form.querySelector(".c_error-text").innerHTML = error.message;
+        console.error("Error\nCode: "+ error.code, "\nMessage: "+ error.message, "\nDetails: "+ error.details);
+        console.error({error});
       });
     });
   }
 });
-
-
-
-
-
-
-
-
-
-    /*
-  const button = document.querySelector("#id_button");
-  button.addEventListener("click", function(e){
-    // Callback function.
-
-    e.preventDefault();
-    console.log("Button clicked!");
-    // Call the function:
-    // Before deplying see "https://firebase.google.com/docs/app-check?authuser=3".
-
-    addMessage2({text: "þetta er test frá callable function!"})
-      .then((result) => {
-        // Read result of the Cloud Function.
-        */
-        /** @type {any} */
-        /*
-        const data = result.data;
-        console.log(data);
-        //const sanitizedMessage = data.text;
-    
-      }).catch((error) => {
-        // Getting the Error details.
-        const code = error.code;
-        const message = error.message;
-        const details = error.details;
-        console.log({" Code": error.code, " Message": error.message, " Details": error.details});
-      });
-
-      console.log("function called");
-
-  });
-
-
-
-  const button_db = document.querySelector("#id_button_db");
-  button_db.addEventListener("click", async function(e){
-    // Asynchronous callback function.
-
-    e.preventDefault();
-    console.log("Button clicked!");
-    
-    const querySnapshot = await getDocs(collection(db, "server"));
-    querySnapshot.forEach((doc) => {
-      console.log(`${doc.id} => ${doc.data()}`);
-      console.log(doc.data());
-    });
-
-
-    console.log("data from firestore!");
-  });
-      */
-
-
