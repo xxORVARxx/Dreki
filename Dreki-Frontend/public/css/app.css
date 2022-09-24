@@ -12,9 +12,11 @@
     --my-theme-secondary-color: rgb(92, 92, 92);
     --my-theme-hover-color: #d33e36;
 }
-body{
-    all: unset;
+html, body{
+    all: unset; /* <- make sure to do this first! */
     background: black;
+    height: 100%;
+    margin: 0;
     color: antiquewhite;
     font-size: 1.25rem;
 }
@@ -235,7 +237,13 @@ button:hover{
 }
 
 /* FOOTER */
-footer{
+body > footer{
+    position: sticky;
+    top: 100vh;
+    width: 100%;
+    padding: 0;
+}
+footer > #id_Orvar{
     position: absolute;
     right: 1rem;
     bottom: 1rem;
@@ -243,5 +251,4 @@ footer{
     color: var(--my-theme-secondary-color);
     padding: 0.33rem 0.6rem 0.2rem 0.6rem;
     border-radius: 0.6rem;
-
 }

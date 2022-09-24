@@ -5,13 +5,45 @@ https://www.npmjs.com/package/onoff
     npm comes with Node.js so if you have node installed you most likely have npm installed as well.
         Or: nvm installs Node which installs npm.
  
-    To See if 'node.js' in installed: (run in terminal)
+    To see if 'node.js' in installed: (run in terminal)
 node -v
 npm -v
 
     To update: (just change the version number)
 nvm install v16.4.0
 npm install -g firebase-tools
+
+    If you get Segmentation Faults try this:
+npm rebuild
+    This will recompile native code with your current version of node
+
+
+    Raspberry Pi:
+    To install Node.JS and NPM on any/old Raspberry Pi:
+    Check what type of ARM chip you have:
+uname -m
+    If this returns something starting with armv6 you will need to install node.js for ARMv6!
+
+    Now go to node.js download page and download the Linux Binaries (ARM) for your ARN version:
+https://nodejs.org/en/download/
+    Ore for old PIs like armv6:
+https://unofficial-builds.nodejs.org/download/release/
+
+    And download a file like this: "node-v16.4.0-linux-armv6l.tar.xz". To do that in the terminal:
+wget https://unofficial-builds.nodejs.org/download/release/v16.4.0/node-v16.4.0-linux-armv6l.tar.xz
+
+    Unzip it: (change the filename to the one based on your version)
+tar -xJf node-v16.4.0-linux-armv6l.tar.xz
+
+    Copy node to "/usr/local":
+cd node-v10.16.1-linux-armv6l/
+sudo cp -R * /usr/local/
+
+    To use the node.js:
+/usr/local/bin/node -v
+
+Restart computer.
+
 
     A node.js app starts in a file called 'index.js'.
     To run the app, go to the current directory and run:

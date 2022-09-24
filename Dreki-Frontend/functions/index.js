@@ -50,7 +50,7 @@ exports.createFirePermit = functions.https.onCall(async (data, context) => {
   // Create the fire permit:
   // Push the new message into Firestore using the Firebase Admin SDK.
   const writeResult = await admin.firestore().collection('permits').add({
-    email: email,
+    email: email.toLowerCase(),
     timestamp: admin.firestore.FieldValue.serverTimestamp()
   });
   const permitID = writeResult.id;
@@ -92,14 +92,13 @@ exports.createFirePermit = functions.https.onCall(async (data, context) => {
 exports.useFirePermit = functions.https.onCall(async (data, context) => {
   functions.logger.log('From useFirePermit.');
 
-  const email = data.email;
-  const code = data.code;
   // Checking attribute.
   if (!(typeof email === 'string' && typeof code === 'string') || email.length === 0  || code.length === 0) {
     // Throwing an HttpsError so that the client gets the error details.
     throw new functions.https.HttpsError('invalid-argument', 'The function must be called with tvo arguments: "email" and "code".');
   }
-
+  const email = data.email.toLowerCase();
+  const code = data.code;
 
   // Search for the permit in the db:
   const dataRef = admin.firestore().collection('permits').doc(code);

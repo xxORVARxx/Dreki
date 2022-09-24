@@ -43,6 +43,7 @@ const myGlobalObj = {
   state: {
     current: null,
     last: null,
+    is_processing: false,
     loading_modal: null
   },
   css_rules: {
@@ -52,6 +53,13 @@ const myGlobalObj = {
     auth_logged_in: null,
     show_cancel: null
   }
+}
+
+// for debuging:
+function f_debug_sleep_function(ms){
+  return new Promise(resolve => setTimeout(resolve, ms));
+  // to use:
+  //await f_debug_sleep_function(10000);
 }
 
 
@@ -222,6 +230,15 @@ document.addEventListener("DOMContentLoaded", function(){
   /*** 3 ***/
   function login_user_with_email(){
 
+    function f_process_started(login_form, login_button){
+      login_button.classList.add("c_animation-loading-button");
+      myGlobalObj.state.is_processing = true;
+    }
+    function f_process_finished(login_form, login_button){
+      login_button.classList.remove("c_animation-loading-button");
+      myGlobalObj.state.is_processing = false;
+    }
+
     function f_error_reset(login_form){
       login_form.querySelector(".c_error-text").innerHTML = "";
     }
@@ -229,9 +246,13 @@ document.addEventListener("DOMContentLoaded", function(){
     const login_form = document.querySelector("#id_login-form");
     const login_button = document.querySelector("#id_login-form > button");
     login_form.addEventListener("submit", async function(e){
-      // Asynchronous callback function.
+      // Callback function.
       e.preventDefault();
-      login_button.classList.add("c_animation-loading-button");
+      if(myGlobalObj.state.is_processing){
+        console.log("Please wait for current process to finish before starting another!");
+        return;
+      }
+      f_process_started(login_form, login_button);
       f_error_reset(login_form);
 
       const email = login_form["id_login-email"].value;
@@ -244,14 +265,12 @@ document.addEventListener("DOMContentLoaded", function(){
 
         // See the function above called: "auth.onAuthStateChanged()" for more logic after signing in.
 
-        // clearing form and error-text if any:
         login_form.reset();
-        f_error_reset(login_form);
-        login_button.classList.remove("c_animation-loading-button");
+        f_process_finished(login_form, login_button);
       })
       .catch((error) => {
+        f_process_finished(login_form, login_button);
         // handle errors here.
-        login_button.classList.remove("c_animation-loading-button");
         login_form.querySelector(".c_error-text").innerHTML = error.code;
         console.error("Error\nCode: "+ error.code, "\nMessage: "+ error.message, "\nDetails: "+ error.details);
         console.error({error});
@@ -270,7 +289,7 @@ document.addEventListener("DOMContentLoaded", function(){
 
     const logout_form = document.querySelector("#id_logout-form");
     const logout_button = document.querySelector("#id_logout-form > button");
-    logout_form.addEventListener("submit", async function(e){
+    logout_form.addEventListener("submit", function(e){
       // Asynchronous callback function in another thread.
       e.preventDefault();
       logout_button.classList.add("c_animation-loading-button");
@@ -282,8 +301,6 @@ document.addEventListener("DOMContentLoaded", function(){
 
         // See the function above called: "auth.onAuthStateChanged()" for more logic after loging out.
 
-        // clearing error-text if any:
-        f_error_reset(logout_form);
         logout_button.classList.remove("c_animation-loading-button");
       }).catch((error) => {
         // handle errors here.
@@ -300,10 +317,18 @@ document.addEventListener("DOMContentLoaded", function(){
   /*** 5 ***/
   function share_fire_permit(){
 
+    function f_process_started(permit_form, send_button){
+      send_button.classList.add("c_animation-loading-button");
+      myGlobalObj.state.is_processing = true;
+    }
+    function f_process_finished(permit_form, send_button){
+      send_button.classList.remove("c_animation-loading-button");
+      myGlobalObj.state.is_processing = false;
+    }
+
     function f_error_reset(permit_form){
       permit_form.querySelector("h2.c_error-text").innerHTML = "";
     }
-
     function f_on_success(permit_form){
       setTimeout(() => {
         permit_form.querySelector("h2.c_success-text").style.setProperty('display', 'none');
@@ -313,13 +338,17 @@ document.addEventListener("DOMContentLoaded", function(){
 
     const permit_form = document.querySelector("#id_permits-for-fire-form");
     const send_button = document.querySelector("#id_permits-for-fire-form > button");
-    permit_form.addEventListener("submit", async function(e){
+    permit_form.addEventListener("submit", function(e){
       // Asynchronous callback function.
       e.preventDefault();
-      send_button.classList.add("c_animation-loading-button");
+      if(myGlobalObj.state.is_processing){
+        console.log("Please wait for current process to finish before starting another!");
+        return;
+      }
+      f_process_started(permit_form, send_button)
       f_error_reset(permit_form);
-      const email = permit_form["id_share-to-email"].value;
 
+      const email = permit_form["id_share-to-email"].value;
       // Call the cloud-function:
       // Before deplying see "https://firebase.google.com/docs/app-check?authuser=3".
       createFirePermit({email: email})
@@ -330,14 +359,13 @@ document.addEventListener("DOMContentLoaded", function(){
         console.log(data);
 
 
-
-        //permit_form.reset();
         f_on_success(permit_form);
-        f_error_reset(permit_form);
-        send_button.classList.remove("c_animation-loading-button");
-      }).catch((error) => {
+        //permit_form.reset();
+        f_process_finished(permit_form, send_button)
+      })
+      .catch((error) => {
+        f_process_finished(permit_form, send_button);
         // handle errors here.
-        send_button.classList.remove("c_animation-loading-button");
         permit_form.querySelector("h2.c_error-text").innerHTML = error.message;
         console.error("Error\nCode: "+ error.code, "\nMessage: "+ error.message, "\nDetails: "+ error.details);
         console.error({error});
@@ -383,7 +411,6 @@ document.addEventListener("DOMContentLoaded", function(){
 
         f_on_success(fire_form);
         fire_form.reset();
-        f_error_reset(fire_form);
         fire_button.classList.remove("c_animation-loading-button");
       }).catch((error) => {
         // handle errors here.
@@ -412,10 +439,11 @@ document.addEventListener("DOMContentLoaded", function(){
     }
 
     const admin_fire_form = document.querySelector("#id_admin-fire-form");
-    const admin_fire_button = document.querySelector("#id_fire-form > button");
+    const admin_fire_button = document.querySelector("#id_admin-fire-form > button");
     admin_fire_form.addEventListener("submit", async function(e){
       // Asynchronous callback function.
       e.preventDefault();
+      admin_fire_button.classList.add("c_animation-loading-button");
       f_error_reset(admin_fire_form);
       
       // Call the cloud-function:
@@ -427,9 +455,8 @@ document.addEventListener("DOMContentLoaded", function(){
         const data = result.data;
         console.log(data);
 
-
+        f_on_success(admin_fire_form);
         admin_fire_form.reset();
-        f_error_reset(admin_fire_form);
         admin_fire_button.classList.remove("c_animation-loading-button");
       }).catch((error) => {
         // handle errors here.
