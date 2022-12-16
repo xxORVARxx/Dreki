@@ -3,6 +3,7 @@
 const admin = require("firebase-admin"); //npm i firebase-admin@9.12.0
 //npm install firebase@8.10.1 --save
 const Mutex = require('async-mutex').Mutex; //npm install async-mutex
+const Gpio = require('onoff').Gpio; //npm install onoff
 
 const serviceAccount = require("./serviceAccountKey.json");
 admin.initializeApp({
@@ -11,6 +12,7 @@ admin.initializeApp({
 
 const db = admin.firestore();
 const mutex = new Mutex();
+const GPIO_4 = new Gpio(4, 'out'); //use GPIO pin 4, and specify that it is output
 
 
 
@@ -27,7 +29,9 @@ const myGlobalObj = {
 function exitHandler(){
   // Callback function.
   console.log(">> Exiting Dreki Backend <<")
-  unsub(); // Detach the listener.
+  dbUnsub(); // Detach the listener.
+  GPIO_4.writeSync(0); // Turn LED off
+  GPIO_4.unexport(); // Unexport GPIO to free resources
 };
 //catches ctrl+c event
 process.on('SIGINT', exitHandler);
@@ -44,8 +48,10 @@ function f_fireDragon(){
     console.log('Do Fire!');
     for(let i = 0; i < myGlobalObj.fire.repeats; i++){
       console.log('FIRE!');
+      GPIO_4.writeSync(1); //set pin state to 1.
       await f_timeout(myGlobalObj.fire.blow_ms);
       console.log('Sleep...');
+      GPIO_4.writeSync(0); //set pin state to 0.
       await f_timeout(myGlobalObj.fire.sleep_ms);
     }
     resolve("Fire Successful!");
@@ -55,7 +61,7 @@ function f_fireDragon(){
 
 
 const fireDoc = db.collection('fire');
-const unsub = fireDoc.onSnapshot(docSnapshot => {
+const dbUnsub = fireDoc.onSnapshot(docSnapshot => {
   // Callback function.
   console.log(`Received fireDoc snapshot of size: ${docSnapshot.size}.`);
 

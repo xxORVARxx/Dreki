@@ -133,3 +133,23 @@ HELLO=world
     in 'index.js' file:
 require('dotenv').config()
 console.log( process.env.HELLO );
+
+
+
+
+
+    To keep node js running
+    You could install forever using npm like this:
+sudo npm install -g forever
+
+    And then start your application with:
+forever start index.js
+
+    To stop a running script from the CLI, use stop, followed by any of the index id, script name, the uid, or the process ID (pid):
+forever stop 0
+forever stop index.js
+forever stop ehbz
+forever stop 8196
+
+    If multiple processes are running and you want to stop all of them at once:
+forever stopall
