@@ -23,11 +23,17 @@ exports.createFirePermit = functions.https.onCall(async (data, context) => {
   functions.logger.log('From createFirePermit.', process.env.USER);
 
   const email = data.email;
+  const fire_pattern = data.fire_pattern;
   // Checking attribute.
   if (!(typeof email === 'string') || email.length === 0) {
     // Throwing an HttpsError so that the client gets the error details.
-    throw new functions.https.HttpsError('invalid-argument', 'The function must be called with one argument: "email".');
+    throw new functions.https.HttpsError('invalid-argument', 'The function must be called with this argument: "email".');
   }
+  if(!(typeof fire_pattern === 'object') || !fire_pattern.blow_s || !fire_pattern.cooldown_s || !fire_pattern.repeats || !fire_pattern.total_s) {
+    // Throwing an HttpsError so that the client gets the error details.
+    throw new functions.https.HttpsError('invalid-argument', 'The function must be called with this argument: "fire_pattern".\n "fire_pattern={blow_s,cooldown_s,repeats,total_s}".');
+  }
+
 
   // Checking that the user is authenticated.
   if (!context.auth) {
@@ -51,7 +57,10 @@ exports.createFirePermit = functions.https.onCall(async (data, context) => {
   // Push the new message into Firestore using the Firebase Admin SDK.
   const writeResult = await admin.firestore().collection('permits').add({
     email: email.toLowerCase(),
-    timestamp: admin.firestore.FieldValue.serverTimestamp()
+    timestamp: admin.firestore.FieldValue.serverTimestamp(),
+    blow_s: fire_pattern.blow_s,
+    cooldown_s: fire_pattern.cooldown_s,
+    repeats: fire_pattern.repeats
   });
   const permitID = writeResult.id;
   functions.logger.log('Permit ID:', permitID);

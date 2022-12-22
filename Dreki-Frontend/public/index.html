@@ -178,6 +178,52 @@
         </h2>
       </form>
 
+      <!--ADMIN FIRE-PATTERN MODAL-->
+      <form id="id_admin-fire-pattern-form" class="c_modal c_auth-logged-in">
+        <h2>
+          <span lang="is" class="c_is">Munstur elds.</span>
+          <span lang="en" class="c_en">Fire pattern.</span>
+        </h2>
+        <div>
+          <span lang="is" class="c_is">Dreki mun spúa eld í </span>
+          <span lang="en" class="c_en">Dragon will blow fire for </span>
+          <b><span class="c_blow-value">5</span></b>
+          <span lang="is" class="c_is">sek. Hættir svo og bíður í </span>
+          <span lang="en" class="c_en">sec. Then stops and waits for </span>
+          <b><span class="c_cooldown-value">5</span></b>
+          <span lang="is" class="c_is">sek. Þetta endurtekur drekinn </span>
+          <span lang="en" class="c_en">sec. This will be repeated </span>
+          <b><span class="c_repeat-value">5</span></b>
+          <span lang="is" class="c_is"> sinnum.</span>
+          <span lang="en" class="c_en"> times.</span>
+        </div>
+        <div id="id_sliders-grid" class="c_slider">
+          <div>
+            <span lang="is" class="c_is">Eldur</span>
+            <span lang="en" class="c_en">Fire</span>
+          </div>
+          <input id="id_blow-slider" type="range" min="3" max="40" value="5">
+          <h3 class="c_blow-value">5</h3>
+          <div>
+            <span lang="is" class="c_is">Bíður</span>
+            <span lang="en" class="c_en">Waits</span>
+          </div>
+          <input id="id_cooldown-slider" type="range" min="3" max="40" value="5">
+          <h3 class="c_cooldown-value">5</h3>
+          <div>
+            <span lang="is" class="c_is">Endurtekur</span>
+            <span lang="en" class="c_en">Repeats</span>
+          </div>
+          <input id="id_repeat-slider" type="range" min="1" max="20" value="3">
+          <h3 class="c_repeat-value">3</h3>
+        </div>
+        <div>
+          <span lang="is" class="c_is">Heildar tími sýningr verður þá </span>
+          <span lang="en" class="c_en">The total time of performance will be </span>
+          <b><span class="c_total-value">00:00:30</span></b>
+        </div>
+      </form>
+
       <!--ADMIN FIRE MODAL-->
       <form id="id_admin-fire-form" class="c_modal c_auth-logged-in">
         <h2>

@@ -102,6 +102,7 @@ header button{
     text-align: center;
     font-size: 2.25rem;
 }
+
 .c_input-field{
     width: 100%;
     border-radius: 0.6rem;
@@ -172,6 +173,64 @@ button:hover{
 }
 #id_cancel-button:hover{
     box-shadow: 0rem 0.1rem 0.6rem rgba(255, 255, 255, 0.25);
+}
+
+/* SLIDERS: */
+#id_sliders-grid{
+    width: 100%;
+    display: grid;
+    grid-template-columns: 6rem 1fr 2.5rem;
+    grid-column-gap: 0.25rem;
+}
+
+#id_sliders-grid input{
+    -webkit-appearance: none;  /* Override default CSS styles */
+    appearance: none;
+    outline: none; /* Remove outline */
+    background-color: var(--my-theme-secondary-color);
+    width: 100%;
+    height: 0.6rem;
+    border-radius: 0.6rem;
+    margin: 2rem 0rem 2rem 0rem;
+    padding: 0rem;
+    -webkit-transition: 0.2s;
+    transition: background-color 0.2s;
+}
+#id_sliders-grid input:hover{
+    background-color: #888;
+}
+/* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
+#id_sliders-grid input::-webkit-slider-thumb{
+    -webkit-appearance: none; /* Override default look */
+    appearance: none;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.6rem;
+    background: var(--my-theme-prime-color);
+    cursor: pointer;
+    -webkit-transition: 0.2s;
+    transition: background-color 0.2s;
+}
+#id_sliders-grid input::-moz-range-thumb{
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.6rem;
+    background: var(--my-theme-prime-color);
+    cursor: pointer;
+    -webkit-transition: 0.2s;
+    transition: background-color 0.2s;
+}
+#id_sliders-grid input::-webkit-slider-thumb:hover{
+    background-color: var(--my-theme-hover-color);
+}
+#id_sliders-grid div{
+    text-align: center;
+    margin: 1.33rem 0rem 0rem 0rem;
+}
+#id_sliders-grid h3{
+    font-size: 1.5rem;
+    text-align: center;
+    margin: 1.25rem 0rem 0rem 0rem;
 }
 
 /* LOADING BUTTON ANIMATION: */

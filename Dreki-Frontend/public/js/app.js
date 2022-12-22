@@ -52,6 +52,12 @@ const myGlobalObj = {
     auth_logged_out: null,
     auth_logged_in: null,
     show_cancel: null
+  },
+  fire_pattern: {
+    blow_s: 5,
+    cooldown_s: 5,
+    repeats: 3,
+    total_s: 30
   }
 }
 
@@ -74,18 +80,21 @@ document.addEventListener("DOMContentLoaded", function(){
   GUI_buttons();
 
   /*** 3 ***/
-  login_user_with_email();
+  GUI_sliders();
 
   /*** 4 ***/
-  logout_user();
+  login_user_with_email();
 
   /*** 5 ***/
-  share_fire_permit();
+  logout_user();
 
   /*** 6 ***/
-  fire_dragon();
+  share_fire_permit();
 
   /*** 7 ***/
+  fire_dragon();
+
+  /*** 8 ***/
   fire_dragon_as_admin();
 
 
@@ -225,9 +234,59 @@ document.addEventListener("DOMContentLoaded", function(){
     });
   }
 
-  
+
 
   /*** 3 ***/
+  function GUI_sliders(){
+
+    function f_update_totla_performance_time(){
+      const totals = document.querySelectorAll(".c_total-value");
+      // Calculate the total seconds and put into the global-object:
+      myGlobalObj.fire_pattern.total_s = (myGlobalObj.fire_pattern.blow_s + myGlobalObj.fire_pattern.cooldown_s) * myGlobalObj.fire_pattern.repeats;
+      // Upate the values in the HTML-DOM:
+      for(let i = 0; i < totals.length; i++){
+        // see: https://stackoverflow.com/questions/1322732/convert-seconds-to-hh-mm-ss-with-javascript
+        totals[i].innerHTML = new Date(myGlobalObj.fire_pattern.total_s * 1000).toISOString().slice(11, 19);
+      }
+    }
+
+    // Make the slider value nonlinear:
+    function f_construct_slider(IDslider, cValues, gVar){ //<-'gVar'= names of the member-variables in 'myGlobalObj'.
+      const slider = document.querySelector(IDslider);
+      const values = document.querySelectorAll(cValues);
+      // Update the current slider value (each time you drag the slider handle).
+      slider.oninput = function(){
+        // callback function.
+        let v = Number(this.value); // 'this.value' returns a string!
+        if(v < 10){
+          // v = v  <-do nothing.
+        }else if(v < 20){
+          v = 10 + ((v - 10) * 2);
+        }else if(v < 30){
+          v = 30 + ((v - 20) * 5);
+        }else if(v <= 40){
+          v = 80 + ((v - 30) * 10);
+        }
+        // Upate the values in the HTML-DOM:
+        for(let i = 0; i < values.length; i++) {
+          values[i].innerHTML = v;
+        }
+        // Put the value into the global-object:
+        myGlobalObj.fire_pattern[gVar] = v; //<-Access member-variables using 'bracket-notation'.
+        f_update_totla_performance_time();
+      }
+    }
+
+    // Initialize the HTML-input slides located in the 'ADMIN FIRE-PATTERN MODAL':
+    f_construct_slider("#id_blow-slider", ".c_blow-value", "blow_s");
+    f_construct_slider("#id_cooldown-slider", ".c_cooldown-value", "cooldown_s");
+    f_construct_slider("#id_repeat-slider", ".c_repeat-value", "repeats");
+    f_update_totla_performance_time();
+  }
+
+  
+
+  /*** 4 ***/
   function login_user_with_email(){
 
     function f_process_started(login_form, login_button){
@@ -280,7 +339,7 @@ document.addEventListener("DOMContentLoaded", function(){
 
 
 
-  /*** 4 ***/
+  /*** 5 ***/
   function logout_user(){
 
     function f_error_reset(logout_form){
@@ -314,7 +373,7 @@ document.addEventListener("DOMContentLoaded", function(){
 
 
 
-  /*** 5 ***/
+  /*** 6 ***/
   function share_fire_permit(){
 
     function f_process_started(permit_form, send_button){
@@ -351,7 +410,7 @@ document.addEventListener("DOMContentLoaded", function(){
       const email = permit_form["id_share-to-email"].value;
       // Call the cloud-function:
       // Before deplying see "https://firebase.google.com/docs/app-check?authuser=3".
-      createFirePermit({email: email})
+      createFirePermit({email: email, fire_pattern: myGlobalObj.fire_pattern})
       .then((result) => {
         // Read result of the Cloud Function.
         /** @type {any} */
@@ -375,7 +434,7 @@ document.addEventListener("DOMContentLoaded", function(){
 
 
 
-  /*** 6 ***/
+  /*** 7 ***/
   function fire_dragon(){
 
     function f_error_reset(fire_form){
@@ -424,7 +483,7 @@ document.addEventListener("DOMContentLoaded", function(){
 
 
 
-  /*** 7 ***/
+  /*** 8 ***/
   function fire_dragon_as_admin(){
 
     function f_error_reset(admin_fire_form){
