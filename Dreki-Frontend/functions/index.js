@@ -100,14 +100,14 @@ exports.createFirePermit = functions.https.onCall(async (data, context) => {
 // Call functions from your app:
 exports.useFirePermit = functions.https.onCall(async (data, context) => {
   functions.logger.log('From useFirePermit.');
+  const email = data.email.toLowerCase();
+  const code = data.code;
 
   // Checking attribute.
   if (!(typeof email === 'string' && typeof code === 'string') || email.length === 0  || code.length === 0) {
     // Throwing an HttpsError so that the client gets the error details.
     throw new functions.https.HttpsError('invalid-argument', 'The function must be called with tvo arguments: "email" and "code".');
   }
-  const email = data.email.toLowerCase();
-  const code = data.code;
 
   // Search for the permit in the db:
   const dataRef = admin.firestore().collection('permits').doc(code);
@@ -116,8 +116,9 @@ exports.useFirePermit = functions.https.onCall(async (data, context) => {
     // Permit not found:
     throw new functions.https.HttpsError('not-found', 'The permit you are looking for was not found: "'+ code +'".');
   }
-  functions.logger.log('Permit data found:', permit.data());
-  if(!(permit.data().email === email)){
+  const dbData = permit.data();
+  functions.logger.log('Permit data found:', dbData);
+  if(!(dbData.email === email)){
     throw new functions.https.HttpsError('unavailable', 'The permit you are looking for in not yours.');
   }
   
@@ -126,7 +127,10 @@ exports.useFirePermit = functions.https.onCall(async (data, context) => {
   // Push data into Firestore using the Firebase Admin SDK.
   const writeResult = await admin.firestore().collection('fire').add({
     code: code,
-    timestamp: admin.firestore.FieldValue.serverTimestamp()
+    timestamp: admin.firestore.FieldValue.serverTimestamp(),
+    blow_s: dbData.blow_s,
+    cooldown_s: dbData.cooldown_s,
+    repeats: dbData.repeats
   });
   const fireID = writeResult.id;
   functions.logger.log('Fire ID:', fireID);
