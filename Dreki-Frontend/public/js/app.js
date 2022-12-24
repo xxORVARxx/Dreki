@@ -36,6 +36,7 @@ connectFunctionsEmulator(functions, 'localhost', 5001);
 const createFirePermit = httpsCallable(functions, 'createFirePermit');
 const useFirePermit = httpsCallable(functions, 'useFirePermit');
 const fireAsAdmin = httpsCallable(functions, 'fireAsAdmin');
+const stopDragon = httpsCallable(functions, 'stopDragon');
 
 const myGlobalObj = {
   uid: null,
@@ -89,14 +90,16 @@ document.addEventListener("DOMContentLoaded", function(){
   logout_user();
 
   /*** 6 ***/
-  share_fire_permit();
+  fire_dragon();
 
   /*** 7 ***/
-  fire_dragon();
+  share_fire_permit();
 
   /*** 8 ***/
   fire_dragon_as_admin();
 
+  /*** 9 ***/
+  stop_dragon();
 
 
 
@@ -374,6 +377,55 @@ document.addEventListener("DOMContentLoaded", function(){
 
 
   /*** 6 ***/
+  function fire_dragon(){
+
+    function f_error_reset(fire_form){
+      fire_form.querySelector(".c_error-text").innerHTML = "";
+    }
+
+    function f_on_success(fire_form){
+      setTimeout(() => {
+        fire_form.querySelector("h2.c_success-text").style.setProperty('display', 'none');
+      }, 6667);
+      fire_form.querySelector("h2.c_success-text").style.setProperty('display', 'block');
+    }
+
+    const fire_form = document.querySelector("#id_fire-form");
+    const fire_button = document.querySelector("#id_fire-form > button");
+    fire_form.addEventListener("submit", async function(e){
+      // Asynchronous callback function.
+      e.preventDefault();
+      fire_button.classList.add("c_animation-loading-button");
+      f_error_reset(fire_form);
+      const email = fire_form["id_email-with-permit"].value;
+      const code = fire_form["id_permit-code"].value;
+      
+      // Call the cloud-function:
+      // Before deplying see "https://firebase.google.com/docs/app-check?authuser=3".
+      useFirePermit({email: email, code: code})
+      .then((result) => {
+        // Read result of the Cloud Function.
+        /** @type {any} */
+        const data = result.data;
+        console.log(data);
+
+
+        f_on_success(fire_form);
+        fire_form.reset();
+        fire_button.classList.remove("c_animation-loading-button");
+      }).catch((error) => {
+        // handle errors here.
+        fire_button.classList.remove("c_animation-loading-button");
+        fire_form.querySelector(".c_error-text").innerHTML = error.message;
+        console.error("Error\nCode: "+ error.code, "\nMessage: "+ error.message, "\nDetails: "+ error.details);
+        console.error({error});
+      });
+    });
+  }
+
+
+
+  /*** 7 ***/
   function share_fire_permit(){
 
     function f_process_started(permit_form, send_button){
@@ -434,55 +486,6 @@ document.addEventListener("DOMContentLoaded", function(){
 
 
 
-  /*** 7 ***/
-  function fire_dragon(){
-
-    function f_error_reset(fire_form){
-      fire_form.querySelector(".c_error-text").innerHTML = "";
-    }
-
-    function f_on_success(fire_form){
-      setTimeout(() => {
-        fire_form.querySelector("h2.c_success-text").style.setProperty('display', 'none');
-      }, 6667);
-      fire_form.querySelector("h2.c_success-text").style.setProperty('display', 'block');
-    }
-
-    const fire_form = document.querySelector("#id_fire-form");
-    const fire_button = document.querySelector("#id_fire-form > button");
-    fire_form.addEventListener("submit", async function(e){
-      // Asynchronous callback function.
-      e.preventDefault();
-      fire_button.classList.add("c_animation-loading-button");
-      f_error_reset(fire_form);
-      const email = fire_form["id_email-with-permit"].value;
-      const code = fire_form["id_permit-code"].value;
-      
-      // Call the cloud-function:
-      // Before deplying see "https://firebase.google.com/docs/app-check?authuser=3".
-      useFirePermit({email: email, code: code})
-      .then((result) => {
-        // Read result of the Cloud Function.
-        /** @type {any} */
-        const data = result.data;
-        console.log(data);
-
-
-        f_on_success(fire_form);
-        fire_form.reset();
-        fire_button.classList.remove("c_animation-loading-button");
-      }).catch((error) => {
-        // handle errors here.
-        fire_button.classList.remove("c_animation-loading-button");
-        fire_form.querySelector(".c_error-text").innerHTML = error.message;
-        console.error("Error\nCode: "+ error.code, "\nMessage: "+ error.message, "\nDetails: "+ error.details);
-        console.error({error});
-      });
-    });
-  }
-
-
-
   /*** 8 ***/
   function fire_dragon_as_admin(){
 
@@ -507,7 +510,7 @@ document.addEventListener("DOMContentLoaded", function(){
       
       // Call the cloud-function:
       // Before deplying see "https://firebase.google.com/docs/app-check?authuser=3".
-      fireAsAdmin({email: myGlobalObj.email, code: myGlobalObj.uid})
+      fireAsAdmin({fire_pattern: myGlobalObj.fire_pattern})
       .then((result) => {
         // Read result of the Cloud Function.
         /** @type {any} */
@@ -521,6 +524,45 @@ document.addEventListener("DOMContentLoaded", function(){
         // handle errors here.
         admin_fire_button.classList.remove("c_animation-loading-button");
         admin_fire_form.querySelector(".c_error-text").innerHTML = error.message;
+        console.error("Error\nCode: "+ error.code, "\nMessage: "+ error.message, "\nDetails: "+ error.details);
+        console.error({error});
+      });
+    });
+  }
+
+
+
+  /*** 9 ***/
+  function stop_dragon(){
+
+    function f_error_reset(logout_form){
+      logout_form.querySelector(".c_error-text").innerHTML = "";
+    }
+
+    const stop_form = document.querySelector("#id_admin-stop-form");
+    const stop_button = document.querySelector("#id_admin-stop-form > button");
+    stop_form.addEventListener("submit", function(e){
+      // Asynchronous callback function in another thread.
+      e.preventDefault();
+      stop_button.classList.add("c_animation-loading-button");
+      f_error_reset(stop_form);
+
+      // Call the cloud-function:
+      // Before deplying see "https://firebase.google.com/docs/app-check?authuser=3".
+      stopDragon({stop: "stop"})
+      .then((result) => {
+        // Read result of the Cloud Function.
+        /** @type {any} */
+        const data = result.data;
+        console.log(data);
+
+        f_on_success(stop_form);
+        stop_form.reset();
+        stop_button.classList.remove("c_animation-loading-button");
+      }).catch((error) => {
+        // handle errors here.
+        stop_button.classList.remove("c_animation-loading-button");
+        stop_form.querySelector(".c_error-text").innerHTML = error.code;
         console.error("Error\nCode: "+ error.code, "\nMessage: "+ error.message, "\nDetails: "+ error.details);
         console.error({error});
       });

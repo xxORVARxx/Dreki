@@ -154,6 +154,20 @@ button:hover{
     background: var(--my-theme-hover-color);
 }
 
+/* STOP MODAL: */
+#id_admin-stop-form{
+    background: var(--my-theme-prime-color);
+}
+#id_admin-stop-form h2{
+    color: white;
+}
+#id_admin-stop-form button{
+    background: firebrick;
+}
+#id_admin-stop-form button:hover{
+    background: var(--my-theme-hover-color);
+}
+
 /* CANCEL BUTTON: */
 #id_cancel-button{
     width: 50%;
@@ -176,13 +190,29 @@ button:hover{
 }
 
 /* SLIDERS: */
+/* Disable the feature to move it by clicking on the slider outside of the knob.*/
+input[type=range]{
+    pointer-events: none;
+}
+input[type=range]::-webkit-slider-thumb{ /*Webkit Browsers like Chrome and Safari.*/
+    pointer-events: auto;
+}
+input[type=range]::-moz-range-thumb{ /*Firefox.*/
+    pointer-events: auto;
+}
+input[type=range]::-ms-thumb{ /*Internet Explorer.*/
+    pointer-events: auto;
+}
+
 #id_sliders-grid{
     width: 100%;
+    box-shadow: 0rem 0.1rem 0.6rem rgba(255, 255, 255, 0.1);
+    border-radius: 0.6rem;
+    margin: 1rem 0rem 1rem 0rem;
     display: grid;
     grid-template-columns: 6rem 1fr 2.5rem;
     grid-column-gap: 0.25rem;
 }
-
 #id_sliders-grid input{
     -webkit-appearance: none;  /* Override default CSS styles */
     appearance: none;
@@ -223,6 +253,7 @@ button:hover{
 #id_sliders-grid input::-webkit-slider-thumb:hover{
     background-color: var(--my-theme-hover-color);
 }
+
 #id_sliders-grid div{
     text-align: center;
     margin: 1.33rem 0rem 0rem 0rem;

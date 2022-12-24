@@ -29,9 +29,9 @@ exports.createFirePermit = functions.https.onCall(async (data, context) => {
     // Throwing an HttpsError so that the client gets the error details.
     throw new functions.https.HttpsError('invalid-argument', 'The function must be called with this argument: "email".');
   }
-  if(!(typeof fire_pattern === 'object') || !fire_pattern.blow_s || !fire_pattern.cooldown_s || !fire_pattern.repeats || !fire_pattern.total_s) {
+  if(!(typeof fire_pattern === 'object') || !fire_pattern.blow_s || !fire_pattern.cooldown_s || !fire_pattern.repeats) {
     // Throwing an HttpsError so that the client gets the error details.
-    throw new functions.https.HttpsError('invalid-argument', 'The function must be called with this argument: "fire_pattern".\n "fire_pattern={blow_s,cooldown_s,repeats,total_s}".');
+    throw new functions.https.HttpsError('invalid-argument', 'The function must be called with this argument: "fire_pattern".\n "fire_pattern={blow_s,cooldown_s,repeats}".');
   }
 
 
@@ -121,6 +121,10 @@ exports.useFirePermit = functions.https.onCall(async (data, context) => {
   if(!(dbData.email === email)){
     throw new functions.https.HttpsError('unavailable', 'The permit you are looking for in not yours.');
   }
+  if(!dbData.blow_s || !dbData.cooldown_s || !dbData.repeats) {
+    // Throwing an HttpsError so that the client gets the error details.
+    throw new functions.https.HttpsError('invalid-argument', 'The "FirePermit" from the db must contain these fields: "blow_s", "cooldown_s" and "repeats".');
+  }
   
 
   // Authorizing the dragon to fire:
@@ -160,9 +164,15 @@ exports.fireAsAdmin = functions.https.onCall(async (data, context) => {
   functions.logger.log('isAdmin:', isAdmin);
   if (!isAdmin.exists) {
     // Throwing an HttpsError so that the client gets the error details.
-    throw new functions.https.HttpsError('permission-denied', '(user not admin) Only admin allowed to call this function.');
+    throw new functions.https.HttpsError('permission-denied', '(user not admin) Only admins allowed to call this function.');
   }
   functions.logger.log('Name:', isAdmin.data());
+
+  // Checking attribute.
+  if(!data.fire_pattern.blow_s || !data.fire_pattern.cooldown_s || !data.fire_pattern.repeats) {
+    // Throwing an HttpsError so that the client gets the error details.
+    throw new functions.https.HttpsError('invalid-argument', 'The function must be called with this argument: "fire_pattern".\n "fire_pattern={blow_s,cooldown_s,repeats}".');
+  }
 
 
   // Authorizing the dragon to fire:
@@ -170,7 +180,10 @@ exports.fireAsAdmin = functions.https.onCall(async (data, context) => {
   const writeResult = await admin.firestore().collection('fire').add({
     isAdmin: true,
     code: admin_id,
-    timestamp: admin.firestore.FieldValue.serverTimestamp()
+    timestamp: admin.firestore.FieldValue.serverTimestamp(),
+    blow_s: data.fire_pattern.blow_s,
+    cooldown_s: data.fire_pattern.cooldown_s,
+    repeats: data.fire_pattern.repeats
   });
   const fireID = writeResult.id;
   functions.logger.log('Fire ID:', fireID);
@@ -178,6 +191,51 @@ exports.fireAsAdmin = functions.https.onCall(async (data, context) => {
 
   return {
     message: 'Success! Fire request has been sent to the dragon.'
+  }
+});
+
+
+
+// Call functions from your app:
+exports.stopDragon = functions.https.onCall(async (data, context) => {
+  functions.logger.log('From stopDragon.');
+
+  // Checking that the user is authenticated.
+  if (!context.auth) {
+    // Throwing an HttpsError so that the client gets the error details.
+    throw new functions.https.HttpsError('unauthenticated', '(user not signed-in) The function must be called while authenticated.');
+  }
+  const admin_id = context.auth.uid;
+  functions.logger.log('User ID:', admin_id);
+
+  // Checking that the user is admin.
+  const isAdmin = await admin.firestore().collection('admin').doc(admin_id).get();
+  functions.logger.log('isAdmin:', isAdmin);
+  if (!isAdmin.exists) {
+    // Throwing an HttpsError so that the client gets the error details.
+    throw new functions.https.HttpsError('permission-denied', '(user not admin) Only admins allowed to call this function.');
+  }
+  functions.logger.log('Name:', isAdmin.data());
+
+  // Checking attribute.
+  if(!data.stop) {
+    // Throwing an HttpsError so that the client gets the error details.
+    throw new functions.https.HttpsError('invalid-argument', 'The function must be called with this argument: "stop".');
+  }
+
+
+  // Requesting the dragon to stop:
+  // Push data into Firestore using the Firebase Admin SDK.
+  const writeResult = await admin.firestore().collection('settings').doc("stop").set({
+    admin: admin_id,
+    stop_ts: admin.firestore.FieldValue.serverTimestamp()
+  });
+  const stopID = writeResult.id;
+  functions.logger.log('Stop ID:', stopID);
+
+
+  return {
+    message: 'Success! Request the dragon to stop has been sent.'
   }
 });
 
