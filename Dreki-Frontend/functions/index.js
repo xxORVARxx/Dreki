@@ -197,8 +197,8 @@ exports.fireAsAdmin = functions.https.onCall(async (data, context) => {
 
 
 // Call functions from your app:
-exports.stopDragon = functions.https.onCall(async (data, context) => {
-  functions.logger.log('From stopDragon.');
+exports.settingsBackend = functions.https.onCall(async (data, context) => {
+  functions.logger.log('From settingsBackend.');
 
   // Checking that the user is authenticated.
   if (!context.auth) {
@@ -218,17 +218,21 @@ exports.stopDragon = functions.https.onCall(async (data, context) => {
   functions.logger.log('Name:', isAdmin.data());
 
   // Checking attribute.
-  if(!data.stop) {
+  if(!data.settings){
     // Throwing an HttpsError so that the client gets the error details.
-    throw new functions.https.HttpsError('invalid-argument', 'The function must be called with this argument: "stop".');
+    throw new functions.https.HttpsError('invalid-argument', 'The function must be called with one argument: "settings".');
+  }
+  if(!(data.settings == "stop" || data.settings == "shut_down"  || data.settings == "turn_on")){
+    // Throwing an HttpsError so that the client gets the error details.
+    throw new functions.https.HttpsError('invalid-argument', 'The available settings are the following: "stop", "shut_down" and "turn_on".');
   }
 
 
-  // Requesting the dragon to stop:
+  // 'Update'ing the settings in the db for the backend: (use 'update' not 'set' on the doc)
   // Push data into Firestore using the Firebase Admin SDK.
-  const writeResult = await admin.firestore().collection('settings').doc("stop").set({
-    admin: admin_id,
-    stop_ts: admin.firestore.FieldValue.serverTimestamp()
+  const writeResult = await admin.firestore().collection('settings-backend').doc(data.settings).update({
+    requester: admin_id,
+    timestamp: admin.firestore.FieldValue.serverTimestamp()
   });
   const stopID = writeResult.id;
   functions.logger.log('Stop ID:', stopID);

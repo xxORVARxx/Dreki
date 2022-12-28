@@ -17,35 +17,54 @@ const GPIO_4 = new Gpio(4, 'out'); //use GPIO pin 4, and specify that it is outp
 
 
 const myGlobalObj = {
+  db: {
+    UnsubFire: null,
+    UnsubSettings: null
+  },
   fire_pattern: {
     blow_s: 5,
     cooldown_s: 5,
     repeats: 3
-  }
+  },
+  ShutDown_ts: null,
+  TurnOn_ts: null,
+  enable_key: null
 };
 
 
 
-function exitHandler(){
+function f_exitHandler(){
   // Callback function.
   console.log(">> Exiting Dreki Backend <<")
-  dbUnsub(); // Detach the listener.
+  myGlobalObj.db.UnsubFire(); // Detach the listener.
+  myGlobalObj.db.UnsubSettings();
   GPIO_4.writeSync(0); // Turn LED off
   GPIO_4.unexport(); // Unexport GPIO to free resources
 };
 //catches ctrl+c event
-process.on('SIGINT', exitHandler);
-//process.on('exit', exitHandler);
+process.on('SIGINT', f_exitHandler);
+//process.on('exit', f_exitHandler);
 
 
 
+function f_enforce_fire_pattern(){
+  if(myGlobalObj.fire_pattern.blow_s < 3 || myGlobalObj.fire_pattern.blow_s > 180){
+    myGlobalObj.fire_pattern.blow_s = 3;
+  }
+  if(myGlobalObj.fire_pattern.cooldown_s < 3 || myGlobalObj.fire_pattern.cooldown_s > 180){
+    myGlobalObj.fire_pattern.cooldown_s = 3;
+  }
+  if(myGlobalObj.fire_pattern.cooldown_s < 1 || myGlobalObj.fire_pattern.cooldown_s > 30){
+    myGlobalObj.fire_pattern.cooldown_s = 1;
+  }
+}
 function f_timeout(s){
   return new Promise(resolve => setTimeout(resolve, s * 1000));
 }
-
 function f_fireDragon(){
   return new Promise( async (resolve, reject) => {
     console.log('Do Fire! ', myGlobalObj.fire_pattern);
+    f_enforce_fire_pattern();
     for(let i = 0; i < myGlobalObj.fire_pattern.repeats; i++){
       console.log('FIRE!');
       GPIO_4.writeSync(1); //set pin state to 1.
@@ -60,42 +79,148 @@ function f_fireDragon(){
 
 
 
-const fireDoc = db.collection('fire');
-const dbUnsub = fireDoc.onSnapshot(docSnapshot => {
-  // Callback function.
-  console.log(`Received fireDoc snapshot of size: ${docSnapshot.size}.`);
+/*** 1 ***/
+handle_fire_request();
 
-  const batch = db.batch();
-  docSnapshot.forEach(function(doc){
-      const fireID = doc.id;
-      const code = doc.data().code;
-      const age_sec = docSnapshot.readTime.seconds - doc.data().timestamp.seconds;
+/*** 2 ***/
+handle_settings();
+
+
+
+/*** 1 ***/
+function handle_fire_request(){
+  const fireDoc = db.collection('fire');
+  myGlobalObj.db.UnsubFire = fireDoc.onSnapshot(docSnapshot => {
+    // Callback function.
+    console.log(`Received fireDoc snapshot of size: ${docSnapshot.size}.`);
   
-      if(age_sec < 45){
-        if(mutex.isLocked()){
-          console.log('Dragon is already firing try again later');
-        }else{
-          console.log('Fire ID:', fireID);
-
-          const dbData = doc.data();
-          myGlobalObj.fire_pattern.blow_s = dbData.blow_s;
-          myGlobalObj.fire_pattern.cooldown_s = dbData.cooldown_s;
-          myGlobalObj.fire_pattern.repeats = dbData.repeats;
-
-          mutex.runExclusive(f_fireDragon).then(function(result){
-            console.log(result, myGlobalObj.fire_pattern);
-            db.collection('permits').doc(code).delete();
-          });
+    const batch = db.batch();
+    docSnapshot.forEach(function(doc){
+        const fireID = doc.id;
+        const code = doc.data().code;
+        const age_sec = docSnapshot.readTime.seconds - doc.data().timestamp.seconds;
+    
+        if(age_sec < 45){
+          if(mutex.isLocked()){
+            console.log('Dragon is already firing try again later');
+          }else{
+            console.log('Fire ID:', fireID);
+  
+            const dbData = doc.data();
+            myGlobalObj.fire_pattern.blow_s = dbData.blow_s;
+            myGlobalObj.fire_pattern.cooldown_s = dbData.cooldown_s;
+            myGlobalObj.fire_pattern.repeats = dbData.repeats;
+  
+            mutex.runExclusive(f_fireDragon).then(function(result){
+              console.log(result, myGlobalObj.fire_pattern);
+              db.collection('permits').doc(code).delete();
+            });
+          }
         }
-      }
-    batch.delete(doc.ref);
+      batch.delete(doc.ref);
+    });
+    batch.commit();   
+  }, err => {
+    console.error(`Encountered error: ${err}`);
   });
-  batch.commit();   
-}, err => {
-  console.error(`Encountered error: ${err}`);
-});
+}
 
 
+
+/*** 2 ***/
+function handle_settings(){
+  function f_is_enable(){
+    /*
+    * If it is shorter time since the dragon was turned-on then when it was shutted-down, 
+    * the dragon is active and this function will generate the enable-key eles the 
+    * enable-key will be 'null' and the dragon won't be able to fire.
+    * The 'enable-key' is a randomly generated 32bit unsigned number, or 'null'.
+    */
+    if(myGlobalObj.TurnOn_ts > myGlobalObj.ShutDown_ts && myGlobalObj.enable_key == null){
+      // This gives two numbers each with an unsigned integer value in the range: '0'-'UINT32_MAX':
+      const [x, y] = new Uint32Array(Float64Array.of(Math.random()).buffer);
+      // https://stackoverflow.com/questions/28461796/randomint-function-that-can-uniformly-handle-the-full-range-of-min-and-max-safe
+      myGlobalObj.enable_key = x;
+    }else{
+      myGlobalObj.enable_key = null;
+    }
+  }
+
+  const settingsDoc = db.collection('settings-backend');
+  myGlobalObj.db.UnsubSettings = settingsDoc.onSnapshot(docSnapshot => {
+    // Callback function.
+    console.log('Received settingsDoc snapshot.');
+    docSnapshot.docChanges().forEach(function(change){
+      /*
+      * only the very first snapshot changes should be of type 'added' and all later snapshot
+      * changes should be of type 'modified' and will be used to received different types of 
+      * requests from frontend.
+      */
+      if(change.type === 'added'){
+        if(myGlobalObj.enable_key){
+          console.error("Something went wrong! The request 'type' should be 'modified'.");
+          return;
+        }
+        if(change.doc.id == 'shut_down'){
+          // Initialize the global variable:
+          myGlobalObj.ShutDown_ts = change.doc.data().timestamp;
+          if(myGlobalObj.TurnOn_ts){
+            // Call this function when both variables have been initialized:
+            f_is_enable();
+          }
+        }
+        if(change.doc.id == 'turn_on'){
+          // Initialize the global variable:
+          myGlobalObj.TurnOn_ts = change.doc.data().timestamp;
+          if(myGlobalObj.ShutDown_ts){
+            // Call this function when both variables have been initialized:
+            f_is_enable();
+          }
+        }
+        console.log("Enable key:", myGlobalObj.enable_key);
+        return;
+      }
+
+      if(docSnapshot.readTime.seconds - change.doc.data().timestamp.seconds > 60){
+        onsole.log('Request is to old.');
+        return;
+      }
+      switch(change.doc.id){
+        case 'stop':
+          /*
+          * If the dragon is currently performing, this will generate new enable-key which will 
+          * disable the dragon's ability to fire (it will be using the old outdated enable-key).
+          */
+          console.log('Received a "stop" request from:', change.doc.data().requester);
+          myGlobalObj.enable_key = null;
+          f_is_enable();
+          break;
+        case 'shut_down':
+          /*
+          * This will set the enable-key to null which will disable the dragon's ability to fire 
+          * and perform until it is turned-on again and a new enable-key is generated.
+          */
+          console.log('Received a "ShutDown" request from:', change.doc.data().requester);
+          myGlobalObj.ShutDown_ts = change.doc.data().timestamp;
+          myGlobalObj.enable_key = null;
+          break;
+        case 'turn_on':
+          /*
+          * This will generate a enable-key if the dragon is currenly shutted-down, which will 
+          * enable it to perform and fire.
+          */
+          console.log('Received a "TurnOn" request from:', change.doc.data().requester);
+          myGlobalObj.TurnOn_ts = change.doc.data().timestamp;
+          f_is_enable();
+          break;
+        default:
+          console.error('Something went wrong! Change.doc.id: ', change.doc.id, '\nChange.doc.data(): ', change.doc.data());
+      }
+    });
+  }, err => {
+    console.error(`Encountered error: ${err}`);
+  });
+}
 
 
 

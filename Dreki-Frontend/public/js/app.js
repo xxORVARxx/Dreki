@@ -36,7 +36,7 @@ connectFunctionsEmulator(functions, 'localhost', 5001);
 const createFirePermit = httpsCallable(functions, 'createFirePermit');
 const useFirePermit = httpsCallable(functions, 'useFirePermit');
 const fireAsAdmin = httpsCallable(functions, 'fireAsAdmin');
-const stopDragon = httpsCallable(functions, 'stopDragon');
+const settingsBackend = httpsCallable(functions, 'settingsBackend');
 
 const myGlobalObj = {
   uid: null,
@@ -535,36 +535,47 @@ document.addEventListener("DOMContentLoaded", function(){
   /*** 9 ***/
   function stop_dragon(){
 
-    function f_error_reset(logout_form){
-      logout_form.querySelector(".c_error-text").innerHTML = "";
+    function f_error_reset(stop_form){
+      stop_form.querySelector(".c_error-text").innerHTML = "";
+    }
+
+    function f_on_success(stop_form){
+      setTimeout(() => {
+        stop_form.querySelector("h2.c_success-text").style.setProperty('display', 'none');
+      }, 6667);
+      stop_form.querySelector("h2.c_success-text").style.setProperty('display', 'block');
     }
 
     const stop_form = document.querySelector("#id_admin-stop-form");
-    const stop_button = document.querySelector("#id_admin-stop-form > button");
-    stop_form.addEventListener("submit", function(e){
-      // Asynchronous callback function in another thread.
-      e.preventDefault();
-      stop_button.classList.add("c_animation-loading-button");
-      f_error_reset(stop_form);
+    const stop_buttons = document.querySelectorAll("#id_admin-stop-form > button");
+    stop_buttons.forEach(function(button){
+      button.addEventListener("click", async function(e){
+        // Asynchronous callback function in another thread.
+        e.preventDefault();
+        const button_tag = (e.target.tagName === "SPAN") ? e.target.parentNode : e.target;
+        button_tag.classList.add("c_animation-loading-button");
+        f_error_reset(stop_form);
+        console.log("Button value:", button_tag.value);
 
-      // Call the cloud-function:
-      // Before deplying see "https://firebase.google.com/docs/app-check?authuser=3".
-      stopDragon({stop: "stop"})
-      .then((result) => {
-        // Read result of the Cloud Function.
-        /** @type {any} */
-        const data = result.data;
-        console.log(data);
+        // Call the cloud-function:
+        // Before deplying see "https://firebase.google.com/docs/app-check?authuser=3".
+        settingsBackend({settings: button_tag.value})
+        .then((result) => {
+          // Read result of the Cloud Function.
+          /** @type {any} */
+          const data = result.data;
+          console.log(data);
 
-        f_on_success(stop_form);
-        stop_form.reset();
-        stop_button.classList.remove("c_animation-loading-button");
-      }).catch((error) => {
-        // handle errors here.
-        stop_button.classList.remove("c_animation-loading-button");
-        stop_form.querySelector(".c_error-text").innerHTML = error.code;
-        console.error("Error\nCode: "+ error.code, "\nMessage: "+ error.message, "\nDetails: "+ error.details);
-        console.error({error});
+          f_on_success(stop_form);
+          stop_form.reset();
+          button_tag.classList.remove("c_animation-loading-button");
+        }).catch((error) => {
+          // handle errors here.
+          button_tag.classList.remove("c_animation-loading-button");
+          stop_form.querySelector(".c_error-text").innerHTML = error.code;
+          console.error("Error\nCode: "+ error.code, "\nMessage: "+ error.message, "\nDetails: "+ error.details);
+          console.error({error});
+        });
       });
     });
   }
