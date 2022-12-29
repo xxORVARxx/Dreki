@@ -62,10 +62,19 @@ function f_timeout(s){
   return new Promise(resolve => setTimeout(resolve, s * 1000));
 }
 function f_fireDragon(){
+  const key = myGlobalObj.enable_key;
   return new Promise( async (resolve, reject) => {
     console.log('Do Fire! ', myGlobalObj.fire_pattern);
     f_enforce_fire_pattern();
     for(let i = 0; i < myGlobalObj.fire_pattern.repeats; i++){
+      if(!myGlobalObj.enable_key || key !== myGlobalObj.enable_key){
+        /*
+        * If the global enable-key has changes since this performance has started,
+        * a "stop" request has been received from frontend.
+        */
+        resolve("Fire aborted! Enable-key mismatch.");
+        return;
+      }
       console.log('FIRE!');
       GPIO_4.writeSync(1); //set pin state to 1.
       await f_timeout(myGlobalObj.fire_pattern.blow_s);
@@ -93,6 +102,11 @@ function handle_fire_request(){
   myGlobalObj.db.UnsubFire = fireDoc.onSnapshot(docSnapshot => {
     // Callback function.
     console.log(`Received fireDoc snapshot of size: ${docSnapshot.size}.`);
+    if(!myGlobalObj.enable_key){
+      // If the enable-key is null the dagon is currenly shutted-down.
+      console.log("Fire aborted! Enable-key mismatch.");
+      return;
+    }
   
     const batch = db.batch();
     docSnapshot.forEach(function(doc){
@@ -141,8 +155,6 @@ function handle_settings(){
       const [x, y] = new Uint32Array(Float64Array.of(Math.random()).buffer);
       // https://stackoverflow.com/questions/28461796/randomint-function-that-can-uniformly-handle-the-full-range-of-min-and-max-safe
       myGlobalObj.enable_key = x;
-    }else{
-      myGlobalObj.enable_key = null;
     }
   }
 
@@ -194,6 +206,7 @@ function handle_settings(){
           console.log('Received a "stop" request from:', change.doc.data().requester);
           myGlobalObj.enable_key = null;
           f_is_enable();
+          GPIO_4.writeSync(0); //set pin state to 0.
           break;
         case 'shut_down':
           /*
@@ -203,6 +216,7 @@ function handle_settings(){
           console.log('Received a "ShutDown" request from:', change.doc.data().requester);
           myGlobalObj.ShutDown_ts = change.doc.data().timestamp;
           myGlobalObj.enable_key = null;
+          GPIO_4.writeSync(0); //set pin state to 0.
           break;
         case 'turn_on':
           /*
