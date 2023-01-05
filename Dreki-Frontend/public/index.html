@@ -1,4 +1,9 @@
 <!DOCTYPE html>
+<!-- 
+  Available URL-parameters are the following:
+  'lang=in'
+  'lang=en'
+-->
 <html>
   <head>
 
@@ -204,14 +209,14 @@
             <span lang="is" class="c_is">Netfangið þitt:</span>
             <span lang="en" class="c_en">Your email address:</span>
           </label>
-          <input type="email" id="id_email-with-permit" required />
+          <input type="email" id="id_email-with-permit" placeholder="email@email.net" required />
         </div>
         <div class="c_input-field">
           <label for="id_permit-code">
             <span lang="is" class="c_is">Auðkenni:</span>
             <span lang="en" class="c_en">Permit-ID:</span>
           </label>
-          <input type="text" id="id_permit-code" autocomplete="one-time-code" required />
+          <input type="text" id="id_permit-code" placeholder="0a1b2c3d4e5f6g7x8y9z" required />
         </div>
         <button>
           <span lang="is" class="c_is">SPÚA!</span>
@@ -266,6 +271,9 @@
         </h2>
       </form>
 
+      <!--Adding whitespace at bottom of page-->
+      <div class="c_auth-logged-in" style="height: 100px;"></div>
+
       <!--CANCEL BUTTON-->
       <div id="id_cancel-button" class="c_show-cancel">
         <button>
@@ -297,25 +305,34 @@
       let css_rule_is = null;
       let css_rule_en = null;
       // looping through all its rules and getting the rules needed:
-      for(let i = 0; i < stylesheet.cssRules.length; i++) {
-        if(stylesheet.cssRules[i].selectorText === '.c_is') {
+      for(let i = 0; i < stylesheet.cssRules.length; i++){
+        if(stylesheet.cssRules[i].selectorText === '.c_is'){
           css_rule_is = stylesheet.cssRules[i];
         }
-        else if(stylesheet.cssRules[i].selectorText === '.c_en') {
+        else if(stylesheet.cssRules[i].selectorText === '.c_en'){
           css_rule_en = stylesheet.cssRules[i];
         }
         if(css_rule_is && css_rule_en){
           break;
         }
       }
+      // Checking if the URL contains a parameter requesting a language:
+      const url_param_str = document.URL.toLowerCase().split('?')[1];
+      if(url_param_str){
+        if(url_param_str.includes('lang=is')){
+          set_to_is();
+        }else if(url_param_str.includes('lang=en')){
+          set_to_en();
+        }
+      }
       // Callback from buttons:
       function set_to_is() {
-        console.log("Change language to English.");
+        console.log("Change language to Icelandic.");
         css_rule_is.style.setProperty('display', 'inline');
         css_rule_en.style.setProperty('display', 'none');
       }
       function set_to_en() {
-        console.log("Change language to Icelandic.");
+        console.log("Change language to English.");
         css_rule_is.style.setProperty('display', 'none');
         css_rule_en.style.setProperty('display', 'inline');
       }

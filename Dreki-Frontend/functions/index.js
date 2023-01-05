@@ -6,7 +6,8 @@ const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 admin.initializeApp();
 
-const nodemailer = require("nodemailer");
+// Nodemailer is a module to allow email sending within Node.js applications.
+const nodemailer = require("nodemailer"); // npm install nodemailer
 
 
 /*
@@ -22,10 +23,11 @@ const nodemailer = require("nodemailer");
 exports.createFirePermit = functions.https.onCall(async (data, context) => {
   functions.logger.log('From createFirePermit.', process.env.USER);
 
-  const email = data.email;
+  // Checking data from frontend:
+  const applicant_email = data.email;
   const fire_pattern = data.fire_pattern;
   // Checking attribute.
-  if (!(typeof email === 'string') || email.length === 0) {
+  if (!(typeof applicant_email === 'string') || applicant_email.length === 0) {
     // Throwing an HttpsError so that the client gets the error details.
     throw new functions.https.HttpsError('invalid-argument', 'The function must be called with this argument: "email".');
   }
@@ -33,9 +35,10 @@ exports.createFirePermit = functions.https.onCall(async (data, context) => {
     // Throwing an HttpsError so that the client gets the error details.
     throw new functions.https.HttpsError('invalid-argument', 'The function must be called with this argument: "fire_pattern".\n "fire_pattern={blow_s,cooldown_s,repeats}".');
   }
+  functions.logger.log("Applicant's email:", applicant_email, "\tFire-pattern:", fire_pattern);
 
 
-  // Checking that the user is authenticated.
+  // Checking that the user is authenticated:
   if (!context.auth) {
     // Throwing an HttpsError so that the client gets the error details.
     throw new functions.https.HttpsError('unauthenticated', '(user not signed-in) The function must be called while authenticated.');
@@ -50,13 +53,12 @@ exports.createFirePermit = functions.https.onCall(async (data, context) => {
     // Throwing an HttpsError so that the client gets the error details.
     throw new functions.https.HttpsError('permission-denied', '(user not admin) Only admin allowed to call this function.');
   }
-  functions.logger.log('Name:', isAdmin.data());
 
 
   // Create the fire permit:
   // Push the new message into Firestore using the Firebase Admin SDK.
   const writeResult = await admin.firestore().collection('permits').add({
-    email: email.toLowerCase(),
+    email: applicant_email.toLowerCase(),
     timestamp: admin.firestore.FieldValue.serverTimestamp(),
     blow_s: fire_pattern.blow_s,
     cooldown_s: fire_pattern.cooldown_s,
@@ -69,6 +71,7 @@ exports.createFirePermit = functions.https.onCall(async (data, context) => {
   // Sending the email using NodeMailer:
   // create reusable transporter object using the default SMTP transport:
   let transporter = nodemailer.createTransport({
+    name: 'smtp.gmail.com',
     host: 'smtp.gmail.com',
     port: 587,
     secure: false, // true for 465, false for other ports
@@ -79,21 +82,40 @@ exports.createFirePermit = functions.https.onCall(async (data, context) => {
   });
 
   // send mail with defined transport object:
-  let info = await transporter.sendMail({
-    from: '"DREKI" <dreki.raufarhofn@gmail.com>', // sender address.
-    to: email, // list of receivers.
-    subject: "Hello from DREKI", // Subject line.
-    //text: "Hello world?", // plain text body.
-    html: '<div style="text-align: center; width: 100%; background: #333; color: #fff; padding: 5vw 0px;"><h1 style="color: #d35536;">Hello from DREKI</h1> <span>here is the <b>email</b> and <b>code</b> you need to fire the dragon:</span> <div style="width: min-content; margin: 5px auto; padding: 10px; border: 5px solid #d35536;"> <p>'+ email +'</p> <p>'+ permitID +'</p> </div> <span>Click here for <b><a href="https://dreki-19662.web.app">Dreki\'s website</a></b> where you find the fire button!</span> <p>Thank you for visiting.</p> </div>', // html body.
-  });
-
+  let info = null;
+  try{
+    info = await transporter.sendMail({
+      from: '"DREKI" <dreki.raufarhofn@gmail.com>', //<- sender address.
+      to: applicant_email, //<- list of receivers.
+      subject: "Spúa Eldi? | Breathe Fire?", //<- Subject line.
+      html: 
+      '<div style="text-align: center; width: 95%; background: #333; color: #fff; padding: 5vw 10px;">\
+      <h1 style="color: #d35536;">Halló!</h1>\
+      <span>Hér er <b>netfangið</b> ásamt <b>auðkenninu</b> sem þú þarft til að drekinn spúi eldi:</span>\
+      <div style="width: min-content; margin: 5px auto; padding: 10px; border: 5px solid #d35536;"> <p>'+ applicant_email +'</p> <p>'+ permitID +'</p> </div>\
+      <span>Smelltu <b><a href="https://dreki-19662.web.app?lang=is&permit='+ permitID +'">hér</a></b> til að komast á vefsíðu drekans, til að spúa!</span>\
+      <p>Takk fyrir og eigðu góðan dag!</p></div>\
+      <div style="height: 5vw;"></div>\
+      <div style="text-align: center; width: 95%; background: #333; color: #fff; padding: 5vw 10px;">\
+      <h1 style="color: #d35536;">Hello!</h1>\
+      <span>Here is the <b>email</b> and <b>ID number</b> you need to make the dragon breathe fire:</span>\
+      <div style="width: min-content; margin: 5px auto; padding: 10px; border: 5px solid #d35536;"> <p>'+ applicant_email +'</p> <p>'+ permitID +'</p> </div>\
+      <span>Click <b><a href="https://dreki-19662.web.app?lang=en&permit='+ permitID +'">here</a></b> for Dreki’s website, where you can find the fire button!</span>\
+      <p>Thank you for visiting and have a nice day!</p></div>', //<- html body.
+      text: `| ${applicant_email} | ${permitID} | https://dreki-19662.web.app |`, //<- plain text body.
+    });
+  }catch(err){
+    throw new functions.https.HttpsError('unavailable', 'Error when sending the email!', err);
+  }
   functions.logger.log('Email sent:', info);
 
-  
+
   return {
-    message: `Success! FirePermit has been created for '${email}'.`
+    message: `Success! FirePermit has been created for '${applicant_email}'.`
   }
 });
+
+
 
 
 
@@ -147,6 +169,8 @@ exports.useFirePermit = functions.https.onCall(async (data, context) => {
 
 
 
+
+
 // Call functions from your app:
 exports.fireAsAdmin = functions.https.onCall(async (data, context) => {
   functions.logger.log('From fireAsAdmin.');
@@ -196,6 +220,8 @@ exports.fireAsAdmin = functions.https.onCall(async (data, context) => {
 
 
 
+
+
 // Call functions from your app:
 exports.settingsBackend = functions.https.onCall(async (data, context) => {
   functions.logger.log('From settingsBackend.');
@@ -234,12 +260,11 @@ exports.settingsBackend = functions.https.onCall(async (data, context) => {
     requester: admin_id,
     timestamp: admin.firestore.FieldValue.serverTimestamp()
   });
-  const stopID = writeResult.id;
-  functions.logger.log('Stop ID:', stopID);
+  functions.logger.log("Firestore's backend settings write-result-ID:", writeResult.id);
 
 
   return {
-    message: 'Success! Request the dragon to stop has been sent.'
+    message: 'Success! Request has been sent to dragon.'
   }
 });
 

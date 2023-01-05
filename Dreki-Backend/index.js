@@ -12,7 +12,7 @@ admin.initializeApp({
 
 const db = admin.firestore();
 const mutex = new Mutex();
-const GPIO_4 = new Gpio(4, 'out'); //use GPIO pin 4, and specify that it is output
+const GPIO_fire = new Gpio(4, 'out'); // Use GPIO pin-4, and specify that it is output.
 
 
 
@@ -38,8 +38,8 @@ function f_exitHandler(){
   console.log(">> Exiting Dreki Backend <<")
   myGlobalObj.db.UnsubFire(); // Detach the listener.
   myGlobalObj.db.UnsubSettings();
-  GPIO_4.writeSync(0); // Turn LED off
-  GPIO_4.unexport(); // Unexport GPIO to free resources
+  GPIO_fire.writeSync(0); // Turn LED off
+  GPIO_fire.unexport(); // Unexport GPIO to free resources
 };
 //catches ctrl+c event
 process.on('SIGINT', f_exitHandler);
@@ -76,10 +76,10 @@ function f_fireDragon(){
         return;
       }
       console.log('FIRE!');
-      GPIO_4.writeSync(1); //set pin state to 1.
+      GPIO_fire.writeSync(1); //set pin state to 1.
       await f_timeout(myGlobalObj.fire_pattern.blow_s);
       console.log('Sleep...');
-      GPIO_4.writeSync(0); //set pin state to 0.
+      GPIO_fire.writeSync(0); //set pin state to 0.
       await f_timeout(myGlobalObj.fire_pattern.cooldown_s);
     }
     resolve("Fire Successful!");
@@ -143,6 +143,30 @@ function handle_fire_request(){
 
 /*** 2 ***/
 function handle_settings(){
+
+  async function f_update_status_for_frontend(is_enable, requester){
+    const status = is_enable ? "turned_on": "shut_down";
+    let update_obj = {
+      status: status,
+      timestamp: admin.firestore.FieldValue.serverTimestamp()
+    };
+    if(requester){
+      update_obj.requester = requester;
+    }
+    // 'Update'ing the settings in the db for the frontend: (use 'update' not 'set' on the doc)
+    // Push data into Firestore using the Firebase Admin SDK.
+    const writeResult = await admin.firestore().collection('settings-frontend').doc("backend").update(update_obj);
+    console.log(`Status for frontend updated to: '${status}'.\nWrite-Result-ID: ${writeResult}`);
+  }
+
+  async function f_on_turn_on(requester){
+    f_update_status_for_frontend(true, requester);
+  }
+
+  async function f_on_shut_down(requester){
+    f_update_status_for_frontend(false, requester);
+  }
+
   function f_is_enable(){
     /*
     * If it is shorter time since the dragon was turned-on then when it was shutted-down, 
@@ -155,7 +179,9 @@ function handle_settings(){
       const [x, y] = new Uint32Array(Float64Array.of(Math.random()).buffer);
       // https://stackoverflow.com/questions/28461796/randomint-function-that-can-uniformly-handle-the-full-range-of-min-and-max-safe
       myGlobalObj.enable_key = x;
+      return true;
     }
+    return false;
   }
 
   const settingsDoc = db.collection('settings-backend');
@@ -178,7 +204,11 @@ function handle_settings(){
           myGlobalObj.ShutDown_ts = change.doc.data().timestamp;
           if(myGlobalObj.TurnOn_ts){
             // Call this function when both variables have been initialized:
-            f_is_enable();
+            if(f_is_enable()){
+              f_on_turn_on(null);
+            }else{
+              f_on_shut_down(null);
+            }
           }
         }
         if(change.doc.id == 'turn_on'){
@@ -186,7 +216,11 @@ function handle_settings(){
           myGlobalObj.TurnOn_ts = change.doc.data().timestamp;
           if(myGlobalObj.ShutDown_ts){
             // Call this function when both variables have been initialized:
-            f_is_enable();
+            if(f_is_enable()){
+              f_on_turn_on(null);
+            }else{
+              f_on_shut_down(null);
+            }
           }
         }
         console.log("Enable key:", myGlobalObj.enable_key);
@@ -197,35 +231,41 @@ function handle_settings(){
         onsole.log('Request is to old.');
         return;
       }
+      const requester_admin_id = change.doc.data().requester;
       switch(change.doc.id){
         case 'stop':
           /*
           * If the dragon is currently performing, this will generate new enable-key which will 
           * disable the dragon's ability to fire (it will be using the old outdated enable-key).
           */
-          console.log('Received a "stop" request from:', change.doc.data().requester);
+          console.log('Received a "stop" request from:', requester_admin_id);
           myGlobalObj.enable_key = null;
           f_is_enable();
-          GPIO_4.writeSync(0); //set pin state to 0.
+          GPIO_fire.writeSync(0); //set pin state to 0.
           break;
         case 'shut_down':
           /*
           * This will set the enable-key to null which will disable the dragon's ability to fire 
           * and perform until it is turned-on again and a new enable-key is generated.
           */
-          console.log('Received a "ShutDown" request from:', change.doc.data().requester);
+          console.log('Received a "ShutDown" request from:', requester_admin_id);
           myGlobalObj.ShutDown_ts = change.doc.data().timestamp;
+          if(myGlobalObj.enable_key){
+            f_on_shut_down(requester_admin_id);
+          }
           myGlobalObj.enable_key = null;
-          GPIO_4.writeSync(0); //set pin state to 0.
+          GPIO_fire.writeSync(0); //set pin state to 0.
           break;
         case 'turn_on':
           /*
           * This will generate a enable-key if the dragon is currenly shutted-down, which will 
           * enable it to perform and fire.
           */
-          console.log('Received a "TurnOn" request from:', change.doc.data().requester);
+          console.log('Received a "TurnOn" request from:', requester_admin_id);
           myGlobalObj.TurnOn_ts = change.doc.data().timestamp;
-          f_is_enable();
+          if(f_is_enable()){
+            f_on_turn_on(requester_admin_id);
+          }
           break;
         default:
           console.error('Something went wrong! Change.doc.id: ', change.doc.id, '\nChange.doc.data(): ', change.doc.data());

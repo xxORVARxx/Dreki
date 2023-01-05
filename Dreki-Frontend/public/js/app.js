@@ -2,9 +2,9 @@
 
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.7/firebase-app.js";
-import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.6.7/firebase-analytics.js";
+//import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.6.7/firebase-analytics.js";
 import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.6.7/firebase-auth.js";
-import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore.js";
+//import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore.js";
 import { getFunctions, httpsCallable, connectFunctionsEmulator } from "https://www.gstatic.com/firebasejs/9.6.7/firebase-functions.js";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -23,9 +23,9 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+//const analytics = getAnalytics(app);
 const auth = getAuth();
-const db = getFirestore(app);
+//const db = getFirestore(app);
 const functions = getFunctions(app);
 
 /*
@@ -84,21 +84,24 @@ document.addEventListener("DOMContentLoaded", function(){
   GUI_sliders();
 
   /*** 4 ***/
-  login_user_with_email();
+  data_from_backend();
 
   /*** 5 ***/
-  logout_user();
+  login_user_with_email();
 
   /*** 6 ***/
-  fire_dragon();
+  logout_user();
 
   /*** 7 ***/
-  share_fire_permit();
+  fire_dragon();
 
   /*** 8 ***/
-  fire_dragon_as_admin();
+  share_fire_permit();
 
   /*** 9 ***/
+  fire_dragon_as_admin();
+
+  /*** 10 ***/
   stop_dragon();
 
 
@@ -287,9 +290,16 @@ document.addEventListener("DOMContentLoaded", function(){
     f_update_totla_performance_time();
   }
 
-  
+
 
   /*** 4 ***/
+  function data_from_backend(){
+
+  }
+
+  
+
+  /*** 5 ***/
   function login_user_with_email(){
 
     function f_process_started(login_form, login_button){
@@ -342,7 +352,7 @@ document.addEventListener("DOMContentLoaded", function(){
 
 
 
-  /*** 5 ***/
+  /*** 6 ***/
   function logout_user(){
 
     function f_error_reset(logout_form){
@@ -376,7 +386,7 @@ document.addEventListener("DOMContentLoaded", function(){
 
 
 
-  /*** 6 ***/
+  /*** 7 ***/
   function fire_dragon(){
 
     function f_error_reset(fire_form){
@@ -390,19 +400,31 @@ document.addEventListener("DOMContentLoaded", function(){
       fire_form.querySelector("h2.c_success-text").style.setProperty('display', 'block');
     }
 
+    function f_check_url_for_permit(fire_form){
+      // Picking out the parameters from the URL:
+      const url_param_map = new URLSearchParams(document.URL.toLowerCase().split('?')[1]);
+      // Geting the parameter containing the fire-permit-id:
+      const url_permit = url_param_map.get("permit");
+      if(url_permit){
+        // Putting the fire-permit-id in to the input-field in HTML:
+        fire_form.querySelector("#id_permit-code").setAttribute("value", url_permit);
+      }
+    }
+
     const fire_form = document.querySelector("#id_fire-form");
     const fire_button = document.querySelector("#id_fire-form > button");
+    f_check_url_for_permit(fire_form);
     fire_form.addEventListener("submit", async function(e){
       // Asynchronous callback function.
       e.preventDefault();
       fire_button.classList.add("c_animation-loading-button");
       f_error_reset(fire_form);
       const email = fire_form["id_email-with-permit"].value;
-      const code = fire_form["id_permit-code"].value;
+      const permit_code = fire_form["id_permit-code"].value;
       
       // Call the cloud-function:
       // Before deplying see "https://firebase.google.com/docs/app-check?authuser=3".
-      useFirePermit({email: email, code: code})
+      useFirePermit({email: email, code: permit_code})
       .then((result) => {
         // Read result of the Cloud Function.
         /** @type {any} */
@@ -425,7 +447,7 @@ document.addEventListener("DOMContentLoaded", function(){
 
 
 
-  /*** 7 ***/
+  /*** 8 ***/
   function share_fire_permit(){
 
     function f_process_started(permit_form, send_button){
@@ -486,7 +508,7 @@ document.addEventListener("DOMContentLoaded", function(){
 
 
 
-  /*** 8 ***/
+  /*** 9 ***/
   function fire_dragon_as_admin(){
 
     function f_error_reset(admin_fire_form){
@@ -532,7 +554,7 @@ document.addEventListener("DOMContentLoaded", function(){
 
 
 
-  /*** 9 ***/
+  /*** 10 ***/
   function stop_dragon(){
 
     function f_error_reset(stop_form){
