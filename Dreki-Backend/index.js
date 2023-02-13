@@ -28,7 +28,9 @@ const myGlobalObj = {
   },
   ShutDown_ts: null,
   TurnOn_ts: null,
-  enable_key: null
+  enable_key: null,
+
+  chronic_hours: 7
 };
 
 
@@ -93,6 +95,9 @@ handle_fire_request();
 
 /*** 2 ***/
 handle_settings();
+
+/*** 3 ***/
+chronic_status_update();
 
 
 
@@ -267,6 +272,21 @@ function handle_settings(){
             f_on_turn_on(requester_admin_id);
           }
           break;
+          case 'poke':
+            /*
+            * Poking the dragon will trigger a response from the dragon which can be used to 
+            * check/get the status of the dragon.
+            */
+            console.log('Received a "poke" request from:', requester_admin_id);
+            const update_obj = {
+              timestamp: admin.firestore.FieldValue.serverTimestamp()
+            };
+            // 'Update'ing the settings in the db for the frontend: (use 'update' not 'set' on the doc)
+            // Push data into Firestore using the Firebase Admin SDK.
+            admin.firestore().collection('settings-frontend').doc("backend").update(update_obj).then(function(){
+              console.log("Status for frontend updated at:", update_obj.timestamp);
+            });
+            break;
         default:
           console.error('Something went wrong! Change.doc.id: ', change.doc.id, '\nChange.doc.data(): ', change.doc.data());
       }
@@ -276,6 +296,30 @@ function handle_settings(){
   });
 }
 
+
+
+
+
+/*** 3 ***/
+function chronic_status_update(){
+
+  function f_chronic(){
+    const update_obj = {
+      timestamp: admin.firestore.FieldValue.serverTimestamp()
+    };
+    // 'Update'ing the settings in the db for the frontend: (use 'update' not 'set' on the doc)
+    // Push data into Firestore using the Firebase Admin SDK.
+    admin.firestore().collection('settings-frontend').doc("backend").update(update_obj).then(function(){
+      console.log("Chronic status updated at:", update_obj.timestamp);
+      setTimeout(f_chronic, 7);
+    });
+  }
+
+  const one_hour = 3600000;
+  if(myGlobalObj.chronic_hours){
+    setTimeout(f_chronic, 7);
+  }
+}
 
 
 
